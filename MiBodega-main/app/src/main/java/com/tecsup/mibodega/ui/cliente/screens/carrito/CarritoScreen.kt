@@ -1,6 +1,7 @@
 package com.tecsup.mibodega.ui.cliente.screens.carrito
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,12 +50,14 @@ import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
-private const val COSTO_DELIVERY = 4.00
+// Opciones de tipo de entrega
+enum class TipoEnvio(val titulo: String, val costo: Double) {
+    RECOJO("Recojo en tienda", 0.0),
+    DELIVERY("Delivery a domicilio", 4.00)
+}
 
 /**
  * Pantalla 5: Mi carrito.
- * No guarda estado propio: el carrito viene de ClienteApp y cualquier
- * cambio (sumar, restar, eliminar) se avisa hacia arriba con callbacks.
  */
 @Composable
 fun CarritoScreen(
@@ -63,8 +68,11 @@ fun CarritoScreen(
     onEliminar: (Producto) -> Unit,
     onContinuarPedido: () -> Unit
 ) {
+    var tipoEnvioSeleccionado by remember { mutableStateOf(TipoEnvio.DELIVERY) }
+
     val subtotal = carrito.sumOf { it.producto.precio * it.cantidad }
-    val total = if (carrito.isNotEmpty()) subtotal + COSTO_DELIVERY else 0.0
+    val costoEnvio = if (carrito.isNotEmpty()) tipoEnvioSeleccionado.costo else 0.0
+    val total = if (carrito.isNotEmpty()) subtotal + costoEnvio else 0.0
 
     // Estado para controlar qué producto se solicitó eliminar
     var productoAEliminar by remember { mutableStateOf<Producto?>(null) }
@@ -152,7 +160,9 @@ fun CarritoScreen(
 
             ResumenYBoton(
                 subtotal = subtotal,
-                delivery = COSTO_DELIVERY,
+                tipoEnvioSeleccionado = tipoEnvioSeleccionado,
+                onSeleccionarEnvio = { tipoEnvioSeleccionado = it },
+                costoEnvio = costoEnvio,
                 total = total,
                 onContinuarPedido = onContinuarPedido
             )
@@ -238,13 +248,54 @@ private fun FilaCarrito(
 @Composable
 private fun ResumenYBoton(
     subtotal: Double,
-    delivery: Double,
+    tipoEnvioSeleccionado: TipoEnvio,
+    onSeleccionarEnvio: (TipoEnvio) -> Unit,
+    costoEnvio: Double,
     total: Double,
     onContinuarPedido: () -> Unit
 ) {
     Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+        // Sección Tipo de Entrega
+        Text(
+            text = "Tipo de entrega",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+
+        TipoEnvio.entries.forEach { tipo ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onSeleccionarEnvio(tipo) }
+                    .padding(vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = tipoEnvioSeleccionado == tipo,
+                    onClick = { onSeleccionarEnvio(tipo) },
+                    colors = RadioButtonDefaults.colors(selectedColor = VerdeBodega)
+                )
+                Text(
+                    text = tipo.titulo,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = if (tipo.costo == 0.0) "Gratis" else "S/ %.2f".format(tipo.costo),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
         FilaResumen(etiqueta = "Subtotal", valor = subtotal)
-        FilaResumen(etiqueta = "Costo de delivery", valor = delivery)
+        FilaResumen(
+            etiqueta = if (tipoEnvioSeleccionado == TipoEnvio.RECOJO) "Costo de entrega" else "Costo de delivery",
+            valor = costoEnvio
+        )
 
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
@@ -262,7 +313,6 @@ private fun ResumenYBoton(
                 color = VerdeBodega
             )
         }
-
         Spacer(Modifier.height(16.dp))
 
         BotonPrimario(
