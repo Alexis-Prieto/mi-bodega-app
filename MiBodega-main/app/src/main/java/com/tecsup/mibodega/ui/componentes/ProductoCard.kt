@@ -1,7 +1,6 @@
 package com.tecsup.mibodega.ui.componentes
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,15 +35,15 @@ import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 /**
- * Tarjeta de producto usada en el grid de Inicio.
- * Solo muestra datos y avisa cuando la tocan o cuando tocan "+";
- * no sabe nada de navegación ni del carrito.
+ * Tarjeta de producto usada en el grid de Inicio y en Favoritos.
  */
 @Composable
 fun ProductoCard(
     producto: Producto,
     onClick: () -> Unit,
     onAgregar: () -> Unit,
+    esFavorito: Boolean = false,
+    onToggleFavorito: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -52,8 +54,6 @@ fun ProductoCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
-            // Placeholder de imagen: reemplázalo por Image(painterResource(...))
-            // cuando tengan las fotos reales de cada producto.
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -67,6 +67,21 @@ fun ProductoCard(
                     tint = VerdeBodega,
                     modifier = Modifier.size(36.dp)
                 )
+
+                IconButton(
+                    onClick = onToggleFavorito,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(2.dp)
+                        .size(30.dp)
+                ) {
+                    Icon(
+                        imageVector = if (esFavorito) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favorito",
+                        tint = if (esFavorito) Color.Red else Color.Gray,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
 
             Spacer(Modifier.height(8.dp))
@@ -106,4 +121,3 @@ fun ProductoCard(
         }
     }
 }
-

@@ -18,6 +18,7 @@ import com.tecsup.mibodega.ui.cliente.screens.carrito.CarritoScreen
 import com.tecsup.mibodega.ui.cliente.screens.confirmacion.ConfirmacionScreen
 import com.tecsup.mibodega.ui.cliente.screens.detalle.DetalleProductoScreen
 import com.tecsup.mibodega.ui.cliente.screens.entrega.DatosEntregaScreen
+import com.tecsup.mibodega.ui.cliente.screens.favoritos.FavoritosScreen
 import com.tecsup.mibodega.ui.cliente.screens.inicio.InicioScreen
 import com.tecsup.mibodega.ui.cliente.screens.login.LoginScreen
 import com.tecsup.mibodega.ui.cliente.screens.pedidos.MisPedidosScreen
@@ -28,8 +29,8 @@ import com.tecsup.mibodega.ui.cliente.screens.registro.RegistroScreen
 /**
  * "Director de orquesta" de la app cliente:
  * - Tiene el NavHost con las rutas de cada pantalla.
- * - Tiene el estado del carrito (List<ItemCarrito>) y del historial de pedidos en memoria.
- * Ninguna Screen navega sola ni modifica el carrito directamente:
+ * - Tiene el estado del carrito (List<ItemCarrito>), del historial de pedidos y de favoritos en memoria.
+ * Ninguna Screen navega sola ni modifica el estado directamente:
  * todas reciben funciones (lambdas) desde aquí (state hoisting).
  */
 
@@ -43,6 +44,7 @@ private object Rutas {
     const val ENTREGA = "entrega"
     const val CONFIRMACION = "confirmacion"
     const val PEDIDOS = "pedidos"
+    const val FAVORITOS = "favoritos"
 
     fun detalle(productoId: Int) = "detalle/$productoId"
 }
@@ -51,9 +53,10 @@ private object Rutas {
 fun ClienteApp() {
     val navController = rememberNavController()
 
-    // El carrito y el historial viven en memoria aquí arriba
+    // El carrito, historial y favoritos viven en memoria aquí
     var carrito by remember { mutableStateOf<List<ItemCarrito>>(emptyList()) }
     var historialPedidos by remember { mutableStateOf(listaPedidosFake) }
+    var favoritosIds by remember { mutableStateOf(setOf<Int>()) }
 
     NavHost(
         navController = navController,
@@ -92,6 +95,7 @@ fun ClienteApp() {
         composable(Rutas.INICIO) {
             InicioScreen(
                 cantidadCarrito = carrito.sumOf { it.cantidad },
+                favoritosIds = favoritosIds,
                 onVerCarrito = { navController.navigate(Rutas.CARRITO) },
                 onProductoClick = { producto ->
                     navController.navigate(Rutas.detalle(producto.id))
@@ -99,8 +103,18 @@ fun ClienteApp() {
                 onAgregarProducto = { producto ->
                     carrito = agregarOSumarProducto(carrito, producto, 1)
                 },
+                onToggleFavorito = { producto ->
+                    favoritosIds = if (favoritosIds.contains(producto.id)) {
+                        favoritosIds - producto.id
+                    } else {
+                        favoritosIds + producto.id
+                    }
+                },
                 onNavegarPedidos = {
                     navController.navigate(Rutas.PEDIDOS)
+                },
+                onNavegarFavoritos = {
+                    navController.navigate(Rutas.FAVORITOS)
                 }
             )
         }
@@ -180,6 +194,23 @@ fun ClienteApp() {
             MisPedidosScreen(
                 pedidos = historialPedidos,
                 onVolver = { navController.popBackStack() }
+            )
+        }
+
+        composable(Rutas.FAVORITOS) {
+            val productosFavoritos = listaProductosFake.filter { favoritosIds.contains(it.id) }
+            FavoritosScreen(
+                productosFavoritos = productosFavoritos,
+                onVolver = { navController.popBackStack() },
+                onProductoClick = { producto ->
+                    navController.navigate(Rutas.detalle(producto.id))
+                },
+                onAgregarProducto = { producto ->
+                    carrito = agregarOSumarProducto(carrito, producto, 1)
+                },
+                onToggleFavorito = { producto ->
+                    favoritosIds = favoritosIds - producto.id
+                }
             )
         }
     }

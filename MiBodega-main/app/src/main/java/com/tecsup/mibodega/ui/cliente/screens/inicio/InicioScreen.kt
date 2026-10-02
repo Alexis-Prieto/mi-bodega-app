@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -59,24 +60,26 @@ import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
-// Pantalla de Inicio y Catalogo de productos
+// Pantalla de Inicio y Catálogo de productos
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InicioScreen(
     productos: List<Producto> = listaProductosFake,
+    favoritosIds: Set<Int> = emptySet(),
     cantidadCarrito: Int,
     onVerCarrito: () -> Unit,
     onProductoClick: (Producto) -> Unit,
-    onAgregarProducto: (Producto) -> Unit
+    onAgregarProducto: (Producto) -> Unit,
+    onToggleFavorito: (Producto) -> Unit = {},
+    onNavegarPedidos: () -> Unit = {},
+    onNavegarFavoritos: () -> Unit = {}
 ) {
     var categoriaSeleccionada by remember { mutableStateOf(listaCategorias.first()) }
 
-    // Declaración e inicialización del estado reactivo para la búsqueda
     var textoBusqueda by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Lógica de filtrado combinado con normalización trim()
     val productosFiltrados = productos.filter { producto ->
         val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
         val coincideBusqueda = producto.nombre.contains(textoBusqueda.trim(), ignoreCase = true)
@@ -88,6 +91,12 @@ fun InicioScreen(
             TopAppBar(
                 title = { Text("Mi Bodega", fontWeight = FontWeight.Bold) },
                 actions = {
+                    IconButton(onClick = onNavegarFavoritos) {
+                        Icon(
+                            imageVector = Icons.Outlined.FavoriteBorder,
+                            contentDescription = "Mis Favoritos"
+                        )
+                    }
                     IconButton(onClick = onVerCarrito) {
                         BadgedBox(
                             badge = {
@@ -102,7 +111,9 @@ fun InicioScreen(
                 }
             )
         },
-        bottomBar = { BarraInferior() }
+        bottomBar = {
+            BarraInferior(onNavegarPedidos = onNavegarPedidos)
+        }
     ) { paddingInterno ->
         Column(
             modifier = Modifier
@@ -110,7 +121,6 @@ fun InicioScreen(
                 .padding(paddingInterno)
                 .padding(horizontal = 16.dp)
         ) {
-            // Vinculación del estado textoBusqueda con el OutlinedTextField
             OutlinedTextField(
                 value = textoBusqueda,
                 onValueChange = { textoBusqueda = it },
@@ -184,8 +194,10 @@ fun InicioScreen(
                     items(productosFiltrados) { producto ->
                         ProductoCard(
                             producto = producto,
+                            esFavorito = favoritosIds.contains(producto.id),
                             onClick = { onProductoClick(producto) },
-                            onAgregar = { onAgregarProducto(producto) }
+                            onAgregar = { onAgregarProducto(producto) },
+                            onToggleFavorito = { onToggleFavorito(producto) }
                         )
                     }
                 }
@@ -214,7 +226,9 @@ private fun ChipCategoria(
 }
 
 @Composable
-private fun BarraInferior() {
+private fun BarraInferior(
+    onNavegarPedidos: () -> Unit = {}
+) {
     var seleccionado by remember { mutableStateOf(0) }
     val items = listOf(
         Triple("Inicio", Icons.Default.Home, 0),
@@ -226,7 +240,10 @@ private fun BarraInferior() {
         items.forEach { (etiqueta, icono, indice) ->
             NavigationBarItem(
                 selected = seleccionado == indice,
-                onClick = { seleccionado = indice },
+                onClick = {
+                    seleccionado = indice
+                    if (indice == 2) onNavegarPedidos()
+                },
                 icon = { Icon(icono, contentDescription = etiqueta) },
                 label = { Text(etiqueta) },
                 colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
@@ -244,9 +261,13 @@ private fun InicioPreview() {
     BodegaTheme {
         InicioScreen(
             cantidadCarrito = 3,
+            favoritosIds = setOf(1, 2),
             onVerCarrito = {},
             onProductoClick = {},
-            onAgregarProducto = {}
+            onAgregarProducto = {},
+            onToggleFavorito = {},
+            onNavegarPedidos = {},
+            onNavegarFavoritos = {}
         )
     }
 }
