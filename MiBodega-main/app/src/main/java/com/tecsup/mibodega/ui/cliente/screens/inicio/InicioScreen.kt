@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
@@ -113,6 +114,13 @@ fun InicioScreen(
                     .padding(top = 8.dp),
                 placeholder = { Text("Buscar productos...") },
                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = {
+                    if (textoBusqueda.isNotEmpty()) {
+                        IconButton(onClick = { textoBusqueda = "" }) {
+                            Icon(Icons.Default.Clear, contentDescription = "Limpiar búsqueda")
+                        }
+                    }
+                },
                 singleLine = true,
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -150,7 +158,7 @@ fun InicioScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "No se encontraron productos en esta categoría",
+                        text = if (textoBusqueda.isNotEmpty()) "No se encontraron productos para \"$textoBusqueda\"" else "No se encontraron productos en esta categoría",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium
