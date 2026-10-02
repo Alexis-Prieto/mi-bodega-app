@@ -53,6 +53,8 @@ import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
+// Pantalla de Inicio y Catalogo de productos
+
 /**
  * Pantalla 3: Inicio / Productos (mockup "Cliente").
  * La más completa: Scaffold (topBar + bottomBar), LazyRow de categorías
