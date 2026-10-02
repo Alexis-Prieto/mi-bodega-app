@@ -66,12 +66,12 @@ fun InicioScreen(
     onAgregarProducto: (Producto) -> Unit
 ) {
     var categoriaSeleccionada by remember { mutableStateOf(listaCategorias.first()) }
+
+    // Declaración e inicialización del estado reactivo para la búsqueda
     var textoBusqueda by remember { mutableStateOf("") }
 
     val productosFiltrados = productos.filter { producto ->
-        val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
-        val coincideBusqueda = producto.nombre.contains(textoBusqueda, ignoreCase = true)
-        coincideCategoria && coincideBusqueda
+        categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
     }
 
     Scaffold(
@@ -102,8 +102,8 @@ fun InicioScreen(
                 .padding(horizontal = 16.dp)
         ) {
             OutlinedTextField(
-                value = textoBusqueda,
-                onValueChange = { textoBusqueda = it },
+                value = "",
+                onValueChange = {},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
