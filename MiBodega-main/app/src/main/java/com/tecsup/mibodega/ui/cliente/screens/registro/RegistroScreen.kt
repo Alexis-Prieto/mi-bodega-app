@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
@@ -38,7 +39,6 @@ import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
-// Hito 2: Implementacion de RegistroScreen
 
 /**
  * Pantalla 2: Registro de datos (mockup "Cliente").
@@ -92,7 +92,7 @@ fun RegistroScreen(
             etiqueta = "Nombre completo",
             valor = nombre,
             onValorCambia = { nombre = it },
-            placeholder = "Juan Pérez",
+            placeholder = "Alexis Prieto",
             esError = intentoSubmit && nombre.isBlank()
         )
         Spacer(Modifier.height(16.dp))
@@ -160,7 +160,7 @@ private fun EncabezadoRegistro(onVolver: () -> Unit) {
     ) {
         IconButton(
             onClick = onVolver,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier.offset(x = (-58).dp)
         ) {
             Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
         }
@@ -169,7 +169,7 @@ private fun EncabezadoRegistro(onVolver: () -> Unit) {
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.weight(1f, fill = false)
         )
-        Spacer(Modifier.size(48.dp)) // balancea el ancho del ícono de la izquierda
+        Spacer(Modifier.size(48.dp))
     }
     Text(
         text = "Completa tus datos para continuar",

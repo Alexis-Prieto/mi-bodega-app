@@ -1,7 +1,9 @@
 package com.tecsup.mibodega.ui.componentes
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
@@ -29,7 +31,7 @@ fun CampoTexto(
     modifier: Modifier = Modifier,
     placeholder: String? = null,
     teclado: KeyboardType = KeyboardType.Text,
-    esError: Boolean = false // <-- AGREGADO
+    esError: Boolean = false
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
@@ -38,13 +40,15 @@ fun CampoTexto(
             fontWeight = FontWeight.SemiBold,
             color = if (esError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground
         )
+        Spacer(modifier = Modifier.height(6.dp))
+
         OutlinedTextField(
             value = valor,
             onValueChange = onValorCambia,
             modifier = Modifier.fillMaxWidth(),
             placeholder = placeholder?.let { { Text(it) } },
             singleLine = true,
-            isError = esError, // <-- AGREGADO (activa el borde rojo de Compose)
+            isError = esError,
             shape = RoundedCornerShape(10.dp),
             keyboardOptions = KeyboardOptions(keyboardType = teclado),
             colors = OutlinedTextFieldDefaults.colors(

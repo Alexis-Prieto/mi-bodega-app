@@ -111,9 +111,9 @@ private fun IlustracionBodega() {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(R.drawable.ilustracion_bodega),
+            painter = painterResource(R.drawable.imagen_tienda),
             contentDescription = "Ilustración de la bodega",
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(340.dp)
         )
     }
 }
