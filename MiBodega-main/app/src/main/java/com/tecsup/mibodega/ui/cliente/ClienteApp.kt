@@ -1,5 +1,9 @@
 package com.tecsup.mibodega.ui.cliente
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +44,6 @@ private object Rutas {
     const val PEDIDOS = "pedidos"
     const val FAVORITOS = "favoritos"
     const val PERFIL = "perfil"
-    // const val CATEGORIAS = "categorias" // Descomentar cuando tengas esta pantalla
 
     fun detalle(productoId: Int) = "detalle/$productoId"
 }
@@ -67,7 +70,35 @@ fun ClienteApp() {
     BodegaTheme(darkTheme = esModoOscuro) {
         NavHost(
             navController = navController,
-            startDestination = Rutas.BIENVENIDA
+            startDestination = Rutas.BIENVENIDA,
+            // Animación de entrada al ir hacia adelante
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            // Animación de salida al ir hacia adelante
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            },
+            // Animación de entrada al regresar (Atrás)
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeIn(animationSpec = tween(300))
+            },
+            // Animación de salida al regresar (Atrás)
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(300)
+                ) + fadeOut(animationSpec = tween(300))
+            }
         ) {
             composable(Rutas.BIENVENIDA) {
                 BienvenidaScreen(
@@ -91,7 +122,7 @@ fun ClienteApp() {
             composable(Rutas.REGISTRO) {
                 RegistroScreen(
                     onVolver = { navController.popBackStack() },
-                    onCrearCuenta = { nombre, telefono, direccion, referencia ->
+                    onCrearCuenta = { _, _, _, _ ->
                         navController.navigate(Rutas.INICIO) {
                             popUpTo(Rutas.BIENVENIDA) { inclusive = true }
                         }
@@ -118,7 +149,7 @@ fun ClienteApp() {
                         }
                     },
                     onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) },
-                    onNavegarFavoritos = { navController.navigate(Rutas.FAVORITOS) }, // Si favoritos no está en la barra inferior, usa navegación normal
+                    onNavegarFavoritos = { navController.navigate(Rutas.FAVORITOS) },
                     onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }
                 )
             }
@@ -194,12 +225,11 @@ fun ClienteApp() {
                 )
             }
 
-            // AQUI ESTABA EL ERROR: Agregamos las funciones de navegación
             composable(Rutas.PEDIDOS) {
                 MisPedidosScreen(
                     pedidos = historialPedidos,
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
-                    onNavegarCategorias = { /* navegarMenuInferior(Rutas.CATEGORIAS) */ }, // Configura cuando tengas la pantalla
+                    onNavegarCategorias = { /* TODO: navegarMenuInferior(Rutas.CATEGORIAS) */ },
                     onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }
                 )
             }
@@ -221,14 +251,13 @@ fun ClienteApp() {
                 )
             }
 
-            // AQUI ESTABA EL ERROR: Agregamos las funciones de navegación
             composable(Rutas.PERFIL) {
                 PerfilScreen(
                     esModoOscuro = esModoOscuro,
                     onModoOscuroChanged = { esModoOscuro = it },
                     onVolver = { navController.popBackStack() },
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
-                    onNavegarCategorias = { /* navegarMenuInferior(Rutas.CATEGORIAS) */ }, // Configura cuando tengas la pantalla
+                    onNavegarCategorias = { /* TODO: navegarMenuInferior(Rutas.CATEGORIAS) */ },
                     onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) }
                 )
             }

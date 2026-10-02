@@ -357,7 +357,7 @@ private fun BarraInferior(
         Triple("Pedidos", Icons.Outlined.Assignment, 2),
         Triple("Perfil", Icons.Outlined.Person, 3)
     )
-    NavigationBar {
+    NavigationBar (containerColor = MaterialTheme.colorScheme.surface,tonalElevation = 0.dp) {
         items.forEach { (etiqueta, icono, indice) ->
             NavigationBarItem(
                 selected = seleccionado == indice,
