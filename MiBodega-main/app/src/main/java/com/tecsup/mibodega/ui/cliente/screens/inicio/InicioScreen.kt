@@ -30,6 +30,8 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +62,12 @@ import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
-// Pantalla de Inicio y Catálogo de productos
+// Opciones para el ordenamiento de productos por precio
+enum class OrdenPrecio(val titulo: String) {
+    NINGUNO("Todos"),
+    MENOR_A_MAYOR("Menor a Mayor"),
+    MAYOR_A_MENOR("Mayor a Menor")
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,15 +83,25 @@ fun InicioScreen(
     onNavegarFavoritos: () -> Unit = {}
 ) {
     var categoriaSeleccionada by remember { mutableStateOf(listaCategorias.first()) }
+    var ordenSeleccionado by remember { mutableStateOf(OrdenPrecio.NINGUNO) }
 
     var textoBusqueda by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val productosFiltrados = productos.filter { producto ->
-        val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
-        val coincideBusqueda = producto.nombre.contains(textoBusqueda.trim(), ignoreCase = true)
-        coincideCategoria && coincideBusqueda
-    }
+    // Filtrado por categoría y búsqueda + Ordenamiento por precio
+    val productosFiltrados = productos
+        .filter { producto ->
+            val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
+            val coincideBusqueda = producto.nombre.contains(textoBusqueda.trim(), ignoreCase = true)
+            coincideCategoria && coincideBusqueda
+        }
+        .let { lista ->
+            when (ordenSeleccionado) {
+                OrdenPrecio.MENOR_A_MAYOR -> lista.sortedBy { it.precio }
+                OrdenPrecio.MAYOR_A_MENOR -> lista.sortedByDescending { it.precio }
+                OrdenPrecio.NINGUNO -> lista
+            }
+        }
 
     Scaffold(
         topBar = {
@@ -153,18 +170,37 @@ fun InicioScreen(
             Text(
                 text = "Productos destacados",
                 style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 20.dp, bottom = 4.dp)
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
             )
 
+            // Categorías
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                contentPadding = PaddingValues(vertical = 4.dp)
             ) {
                 items(listaCategorias) { categoria ->
                     ChipCategoria(
                         texto = categoria,
                         seleccionado = categoria == categoriaSeleccionada,
                         onClick = { categoriaSeleccionada = categoria }
+                    )
+                }
+            }
+
+            // Opciones de orden por precio desplazables
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(vertical = 4.dp)
+            ) {
+                items(OrdenPrecio.entries.toTypedArray()) { orden ->
+                    FilterChip(
+                        selected = ordenSeleccionado == orden,
+                        onClick = { ordenSeleccionado = orden },
+                        label = { Text(orden.titulo) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = VerdeBodega.copy(alpha = 0.2f),
+                            selectedLabelColor = VerdeBodega
+                        )
                     )
                 }
             }
@@ -219,7 +255,7 @@ private fun ChipCategoria(
         modifier = Modifier
             .background(fondo, RoundedCornerShape(20.dp))
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(text = texto, color = contenido, fontWeight = FontWeight.Medium)
     }
