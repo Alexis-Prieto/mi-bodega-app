@@ -70,8 +70,11 @@ fun InicioScreen(
     // Declaración e inicialización del estado reactivo para la búsqueda
     var textoBusqueda by remember { mutableStateOf("") }
 
+    // Lógica de filtrado combinado (categoría + búsqueda)
     val productosFiltrados = productos.filter { producto ->
-        categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
+        val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
+        val coincideBusqueda = producto.nombre.contains(textoBusqueda, ignoreCase = true)
+        coincideCategoria && coincideBusqueda
     }
 
     Scaffold(
