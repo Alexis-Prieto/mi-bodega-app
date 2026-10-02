@@ -20,18 +20,19 @@ import com.tecsup.mibodega.ui.cliente.screens.detalle.DetalleProductoScreen
 import com.tecsup.mibodega.ui.cliente.screens.entrega.DatosEntregaScreen
 import com.tecsup.mibodega.ui.cliente.screens.inicio.InicioScreen
 import com.tecsup.mibodega.ui.cliente.screens.login.LoginScreen
+import com.tecsup.mibodega.ui.cliente.screens.pedidos.MisPedidosScreen
+import com.tecsup.mibodega.ui.cliente.screens.pedidos.PedidoHistorial
+import com.tecsup.mibodega.ui.cliente.screens.pedidos.listaPedidosFake
 import com.tecsup.mibodega.ui.cliente.screens.registro.RegistroScreen
 
 /**
  * "Director de orquesta" de la app cliente:
  * - Tiene el NavHost con las rutas de cada pantalla.
- * - Tiene el estado del carrito (List<ItemCarrito>), que se reparte
- *   hacia abajo a Inicio, Detalle, Carrito y Entrega.
+ * - Tiene el estado del carrito (List<ItemCarrito>) y del historial de pedidos en memoria.
  * Ninguna Screen navega sola ni modifica el carrito directamente:
  * todas reciben funciones (lambdas) desde aquí (state hoisting).
  */
 
-// Integracion de barra de navegacion inferior
 private object Rutas {
     const val BIENVENIDA = "bienvenida"
     const val REGISTRO = "registro"
@@ -41,6 +42,7 @@ private object Rutas {
     const val CARRITO = "carrito"
     const val ENTREGA = "entrega"
     const val CONFIRMACION = "confirmacion"
+    const val PEDIDOS = "pedidos"
 
     fun detalle(productoId: Int) = "detalle/$productoId"
 }
@@ -49,8 +51,9 @@ private object Rutas {
 fun ClienteApp() {
     val navController = rememberNavController()
 
-    // El carrito vive aquí arriba, no en ninguna Screen.
+    // El carrito y el historial viven en memoria aquí arriba
     var carrito by remember { mutableStateOf<List<ItemCarrito>>(emptyList()) }
+    var historialPedidos by remember { mutableStateOf(listaPedidosFake) }
 
     NavHost(
         navController = navController,
@@ -79,7 +82,6 @@ fun ClienteApp() {
             RegistroScreen(
                 onVolver = { navController.popBackStack() },
                 onCrearCuenta = { nombre, telefono, direccion, referencia ->
-                    // TODO: guardar estos datos cuando exista el registro real
                     navController.navigate(Rutas.INICIO) {
                         popUpTo(Rutas.BIENVENIDA) { inclusive = true }
                     }
@@ -131,7 +133,7 @@ fun ClienteApp() {
                         when {
                             it.producto.id != producto.id -> it
                             it.cantidad > 1 -> it.copy(cantidad = it.cantidad - 1)
-                            else -> null // si llega a 0, se elimina de la lista
+                            else -> null
                         }
                     }
                 },
@@ -146,6 +148,16 @@ fun ClienteApp() {
             DatosEntregaScreen(
                 onVolver = { navController.popBackStack() },
                 onConfirmarPedido = {
+                    // Generar nuevo registro de pedido en la lista de historial
+                    val totalPedido = carrito.sumOf { it.producto.precio * it.cantidad } + 4.0
+                    val nuevoPedido = PedidoHistorial(
+                        id = "PED-00${historialPedidos.size + 1}",
+                        fecha = "Hoy",
+                        estado = "En camino",
+                        cantidadProductos = carrito.sumOf { it.cantidad },
+                        total = totalPedido
+                    )
+                    historialPedidos = listOf(nuevoPedido) + historialPedidos
                     navController.navigate(Rutas.CONFIRMACION)
                 }
             )
@@ -159,6 +171,13 @@ fun ClienteApp() {
                         popUpTo(Rutas.INICIO) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        composable(Rutas.PEDIDOS) {
+            MisPedidosScreen(
+                pedidos = historialPedidos,
+                onVolver = { navController.popBackStack() }
             )
         }
     }
