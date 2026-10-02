@@ -20,12 +20,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,10 +76,10 @@ fun InicioScreen(
     var textoBusqueda by remember { mutableStateOf("") }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Lógica de filtrado combinado (categoría + búsqueda)
+    // Lógica de filtrado combinado con normalización trim()
     val productosFiltrados = productos.filter { producto ->
         val coincideCategoria = categoriaSeleccionada == "Todos" || producto.categoria == categoriaSeleccionada
-        val coincideBusqueda = producto.nombre.contains(textoBusqueda, ignoreCase = true)
+        val coincideBusqueda = producto.nombre.contains(textoBusqueda.trim(), ignoreCase = true)
         coincideCategoria && coincideBusqueda
     }
 
@@ -167,7 +167,7 @@ fun InicioScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (textoBusqueda.isNotEmpty()) "No se encontraron productos para \"$textoBusqueda\"" else "No se encontraron productos en esta categoría",
+                        text = if (textoBusqueda.trim().isNotEmpty()) "No se encontraron productos para \"${textoBusqueda.trim()}\"" else "No se encontraron productos en esta categoría",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium
