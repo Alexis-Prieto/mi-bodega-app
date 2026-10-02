@@ -38,6 +38,8 @@ import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
+// Hito 2: Implementacion de RegistroScreen
+
 /**
  * Pantalla 2: Registro de datos (mockup "Cliente").
  * Guarda su propio estado de formulario (remember) porque solo esta
