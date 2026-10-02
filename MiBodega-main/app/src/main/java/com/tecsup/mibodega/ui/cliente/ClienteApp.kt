@@ -29,6 +29,8 @@ import com.tecsup.mibodega.ui.cliente.screens.registro.RegistroScreen
  * Ninguna Screen navega sola ni modifica el carrito directamente:
  * todas reciben funciones (lambdas) desde aquí (state hoisting).
  */
+
+// Integracion de barra de navegacion inferior
 private object Rutas {
     const val BIENVENIDA = "bienvenida"
     const val REGISTRO = "registro"
