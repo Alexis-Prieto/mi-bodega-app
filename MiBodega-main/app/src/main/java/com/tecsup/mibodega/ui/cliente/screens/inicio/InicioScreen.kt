@@ -49,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -59,7 +60,6 @@ import com.tecsup.mibodega.ui.cliente.modelo.listaCategorias
 import com.tecsup.mibodega.ui.cliente.modelo.listaProductosFake
 import com.tecsup.mibodega.ui.componentes.ProductoCard
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 // Opciones para el ordenamiento de productos por precio
@@ -80,7 +80,8 @@ fun InicioScreen(
     onAgregarProducto: (Producto) -> Unit,
     onToggleFavorito: (Producto) -> Unit = {},
     onNavegarPedidos: () -> Unit = {},
-    onNavegarFavoritos: () -> Unit = {}
+    onNavegarFavoritos: () -> Unit = {},
+    onNavegarPerfil: () -> Unit = {}
 ) {
     var categoriaSeleccionada by remember { mutableStateOf(listaCategorias.first()) }
     var ordenSeleccionado by remember { mutableStateOf(OrdenPrecio.NINGUNO) }
@@ -129,7 +130,10 @@ fun InicioScreen(
             )
         },
         bottomBar = {
-            BarraInferior(onNavegarPedidos = onNavegarPedidos)
+            BarraInferior(
+                onNavegarPedidos = onNavegarPedidos,
+                onNavegarPerfil = onNavegarPerfil
+            )
         }
     ) { paddingInterno ->
         Column(
@@ -144,12 +148,27 @@ fun InicioScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
-                placeholder = { Text("Buscar productos...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                placeholder = {
+                    Text(
+                        "Buscar productos...",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
                 trailingIcon = {
                     if (textoBusqueda.isNotEmpty()) {
                         IconButton(onClick = { textoBusqueda = "" }) {
-                            Icon(Icons.Default.Clear, contentDescription = "Limpiar búsqueda")
+                            Icon(
+                                Icons.Default.Clear,
+                                contentDescription = "Limpiar búsqueda",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 },
@@ -160,9 +179,11 @@ fun InicioScreen(
                 ),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = GrisClaro,
-                    focusedContainerColor = GrisClaro,
-                    unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedBorderColor = Color.Transparent,
                     focusedBorderColor = VerdeBodega
                 )
             )
@@ -199,7 +220,9 @@ fun InicioScreen(
                         label = { Text(orden.titulo) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = VerdeBodega.copy(alpha = 0.2f),
-                            selectedLabelColor = VerdeBodega
+                            selectedLabelColor = VerdeBodega,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
@@ -248,8 +271,8 @@ private fun ChipCategoria(
     seleccionado: Boolean,
     onClick: () -> Unit
 ) {
-    val fondo = if (seleccionado) VerdeBodega else GrisClaro
-    val contenido = if (seleccionado) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    val fondo = if (seleccionado) VerdeBodega else MaterialTheme.colorScheme.surfaceVariant
+    val contenido = if (seleccionado) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
 
     Row(
         modifier = Modifier
@@ -263,7 +286,8 @@ private fun ChipCategoria(
 
 @Composable
 private fun BarraInferior(
-    onNavegarPedidos: () -> Unit = {}
+    onNavegarPedidos: () -> Unit = {},
+    onNavegarPerfil: () -> Unit = {}
 ) {
     var seleccionado by remember { mutableStateOf(0) }
     val items = listOf(
@@ -278,7 +302,10 @@ private fun BarraInferior(
                 selected = seleccionado == indice,
                 onClick = {
                     seleccionado = indice
-                    if (indice == 2) onNavegarPedidos()
+                    when (indice) {
+                        2 -> onNavegarPedidos()
+                        3 -> onNavegarPerfil()
+                    }
                 },
                 icon = { Icon(icono, contentDescription = etiqueta) },
                 label = { Text(etiqueta) },
@@ -303,7 +330,8 @@ private fun InicioPreview() {
             onAgregarProducto = {},
             onToggleFavorito = {},
             onNavegarPedidos = {},
-            onNavegarFavoritos = {}
+            onNavegarFavoritos = {},
+            onNavegarPerfil = {}
         )
     }
 }

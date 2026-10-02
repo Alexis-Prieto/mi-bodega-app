@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,7 +48,6 @@ import com.tecsup.mibodega.ui.cliente.modelo.listaProductosFake
 import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.componentes.SelectorCantidad
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 // Opciones de tipo de entrega
@@ -112,60 +112,66 @@ fun CarritoScreen(
         )
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()
+    // SOLUCIÓN: Usamos Surface para que el fondo y los textos reaccionen al Modo Oscuro
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        EncabezadoCarrito(onVolver = onVolver)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+        ) {
+            EncabezadoCarrito(onVolver = onVolver)
 
-        if (carrito.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Tu carrito está vacío",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontWeight = FontWeight.Medium
+            if (carrito.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Tu carrito está vacío",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 20.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
+                    items(carrito, key = { it.producto.id }) { item ->
+                        FilaCarrito(
+                            item = item,
+                            onIncrementar = { onIncrementar(item.producto) },
+                            onDecrementar = {
+                                if (item.cantidad == 1) {
+                                    productoAEliminar = item.producto
+                                } else {
+                                    onDecrementar(item.producto)
+                                }
+                            },
+                            onEliminar = { productoAEliminar = item.producto }
+                        )
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    }
+                }
+
+                ResumenYBoton(
+                    subtotal = subtotal,
+                    tipoEnvioSeleccionado = tipoEnvioSeleccionado,
+                    onSeleccionarEnvio = { tipoEnvioSeleccionado = it },
+                    costoEnvio = costoEnvio,
+                    total = total,
+                    onContinuarPedido = onContinuarPedido
                 )
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 20.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
-            ) {
-                items(carrito, key = { it.producto.id }) { item ->
-                    FilaCarrito(
-                        item = item,
-                        onIncrementar = { onIncrementar(item.producto) },
-                        onDecrementar = {
-                            if (item.cantidad == 1) {
-                                productoAEliminar = item.producto
-                            } else {
-                                onDecrementar(item.producto)
-                            }
-                        },
-                        onEliminar = { productoAEliminar = item.producto }
-                    )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                }
-            }
-
-            ResumenYBoton(
-                subtotal = subtotal,
-                tipoEnvioSeleccionado = tipoEnvioSeleccionado,
-                onSeleccionarEnvio = { tipoEnvioSeleccionado = it },
-                costoEnvio = costoEnvio,
-                total = total,
-                onContinuarPedido = onContinuarPedido
-            )
         }
     }
 }
@@ -203,7 +209,8 @@ private fun FilaCarrito(
         Box(
             modifier = Modifier
                 .size(56.dp)
-                .background(GrisClaro, RoundedCornerShape(10.dp)),
+                // SOLUCIÓN: Cambiamos GrisClaro por surfaceVariant para que se adapte
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp)),
             contentAlignment = Alignment.Center
         ) {
             Icon(

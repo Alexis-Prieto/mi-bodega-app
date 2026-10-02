@@ -13,3 +13,8 @@ val RojoPrecio    = Color(0xFFE0342A)   // precio destacado en detalle
 val FondoClaro    = Color(0xFFEAF4FB)   // fondo celeste superior (bienvenida)
 val GrisBorde     = Color(0xFFCBD3DD)   // bordes de inputs y botón secundario
 val Blanco        = Color(0xFFFFFFFF)
+
+// Modo Oscuro
+val NegroFondo      = Color(0xFF121212)
+val NegroSuperficie = Color(0xFF1E1E1E)
+val GrisOscuro      = Color(0xFF2D2D2D)

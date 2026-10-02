@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +38,6 @@ import com.tecsup.mibodega.ui.cliente.modelo.listaProductosFake
 import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.componentes.SelectorCantidad
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.RojoPrecio
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
@@ -57,59 +57,65 @@ fun DetalleProductoScreen(
 ) {
     var cantidad by remember { mutableStateOf(1) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()
+    // SOLUCIÓN: Surface envolviendo la pantalla para que el fondo se adapte al modo oscuro
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        EncabezadoDetalle(onVolver = onVolver)
-
-        ImagenProducto()
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
+                .safeDrawingPadding()
         ) {
-            Spacer(Modifier.height(16.dp))
+            EncabezadoDetalle(onVolver = onVolver)
 
-            Text(
-                text = producto.nombre,
-                style = MaterialTheme.typography.titleMedium
-            )
+            ImagenProducto()
 
-            Spacer(Modifier.height(4.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp)
+            ) {
+                Spacer(Modifier.height(16.dp))
 
-            Text(
-                text = "S/ %.2f".format(producto.precio),
-                style = MaterialTheme.typography.displayMedium.copy(fontSize = 26.sp),
-                color = RojoPrecio
-            )
+                Text(
+                    text = producto.nombre,
+                    style = MaterialTheme.typography.titleMedium
+                )
 
-            Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(4.dp))
 
-            Text(
-                text = producto.descripcion,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+                Text(
+                    text = "S/ %.2f".format(producto.precio),
+                    style = MaterialTheme.typography.displayMedium.copy(fontSize = 26.sp),
+                    color = RojoPrecio
+                )
 
-            Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(12.dp))
 
-            SelectorCantidad(
-                cantidad = cantidad,
-                onIncrementar = { cantidad++ },
-                onDecrementar = { if (cantidad > 1) cantidad-- }
-            )
+                Text(
+                    text = producto.descripcion,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
-            Spacer(Modifier.weight(1f))
+                Spacer(Modifier.height(20.dp))
 
-            BotonPrimario(
-                texto = "Agregar al carrito",
-                onClick = { onAgregarAlCarrito(producto, cantidad) }
-            )
+                SelectorCantidad(
+                    cantidad = cantidad,
+                    onIncrementar = { cantidad++ },
+                    onDecrementar = { if (cantidad > 1) cantidad-- }
+                )
 
-            Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.weight(1f))
+
+                BotonPrimario(
+                    texto = "Agregar al carrito",
+                    onClick = { onAgregarAlCarrito(producto, cantidad) }
+                )
+
+                Spacer(Modifier.height(24.dp))
+            }
         }
     }
 }
@@ -140,7 +146,7 @@ private fun ImagenProducto() {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(1.4f)
-            .background(GrisClaro),
+            .background(MaterialTheme.colorScheme.surfaceVariant),
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -163,4 +169,3 @@ private fun DetalleProductoPreview() {
         )
     }
 }
-
