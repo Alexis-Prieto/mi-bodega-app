@@ -1,5 +1,6 @@
 package com.tecsup.mibodega.ui.cliente.screens.inicio
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -7,9 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -20,13 +25,16 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,12 +57,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.tecsup.mibodega.R
 import com.tecsup.mibodega.ui.cliente.modelo.Producto
 import com.tecsup.mibodega.ui.cliente.modelo.listaCategorias
 import com.tecsup.mibodega.ui.cliente.modelo.listaProductosFake
@@ -107,7 +123,13 @@ fun InicioScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Mi Bodega", fontWeight = FontWeight.Bold) },
+                title = { Text(text = buildAnnotatedString {
+                    append("Mi ")
+                    withStyle(SpanStyle(color = VerdeBodega)) { append("Bodega") }
+                },
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onBackground) },
                 actions = {
                     IconButton(onClick = onNavegarFavoritos) {
                         Icon(
@@ -142,6 +164,7 @@ fun InicioScreen(
                 .padding(paddingInterno)
                 .padding(horizontal = 16.dp)
         ) {
+            // 1. Buscador
             OutlinedTextField(
                 value = textoBusqueda,
                 onValueChange = { textoBusqueda = it },
@@ -188,16 +211,10 @@ fun InicioScreen(
                 )
             )
 
-            Text(
-                text = "Productos destacados",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
-            )
-
-            // Categorías
+            // 2. Categorías (Chips con íconos)
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 4.dp)
+                contentPadding = PaddingValues(top = 12.dp, bottom = 4.dp)
             ) {
                 items(listaCategorias) { categoria ->
                     ChipCategoria(
@@ -208,7 +225,7 @@ fun InicioScreen(
                 }
             }
 
-            // Opciones de orden por precio desplazables
+            // 3. Opciones de orden por precio desplazables
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(vertical = 4.dp)
@@ -228,6 +245,14 @@ fun InicioScreen(
                 }
             }
 
+            // 4. Título de productos destacados (Ubicado justo abajo del filtro de precios)
+            Text(
+                text = "Productos destacados",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
+            )
+
+            // 5. Lista de Productos
             if (productosFiltrados.isEmpty()) {
                 Box(
                     modifier = Modifier
@@ -247,7 +272,7 @@ fun InicioScreen(
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
-                    contentPadding = PaddingValues(vertical = 12.dp),
+                    contentPadding = PaddingValues(top = 8.dp, bottom = 12.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(productosFiltrados) { producto ->
@@ -271,16 +296,51 @@ private fun ChipCategoria(
     seleccionado: Boolean,
     onClick: () -> Unit
 ) {
-    val fondo = if (seleccionado) VerdeBodega else MaterialTheme.colorScheme.surfaceVariant
-    val contenido = if (seleccionado) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    val fondo = if (seleccionado) VerdeBodega else Color(0xFFF3F4F6)
+    val contenido = if (seleccionado) Color.White else Color(0xFF333333)
+    val imagenRes = obtenerIconoCategoria(texto)
 
-    Row(
+    Box(
         modifier = Modifier
-            .background(fondo, RoundedCornerShape(20.dp))
+            .width(72.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(fondo)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(vertical = 10.dp, horizontal = 4.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Text(text = texto, color = contenido, fontWeight = FontWeight.Medium)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (imagenRes != 0) {
+                Image(
+                    painter = painterResource(id = imagenRes),
+                    contentDescription = texto,
+                    modifier = Modifier.size(28.dp)
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+            }
+
+            Text(
+                text = texto,
+                style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
+                fontWeight = if (seleccionado) FontWeight.Bold else FontWeight.Medium,
+                color = contenido,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+private fun obtenerIconoCategoria(categoria: String): Int {
+    return when (categoria.lowercase()) {
+        "todos" -> R.drawable.logo_carrito
+        "bebidas" -> R.drawable.bebidas_logo
+        "abarrotes" -> R.drawable.abarrotes_logo
+        "snacks" -> R.drawable.snacks_logo
+        else -> R.drawable.logo_carrito
     }
 }
 
@@ -292,9 +352,9 @@ private fun BarraInferior(
     var seleccionado by remember { mutableStateOf(0) }
     val items = listOf(
         Triple("Inicio", Icons.Default.Home, 0),
-        Triple("Categorías", Icons.Default.List, 1),
-        Triple("Pedidos", Icons.Default.Receipt, 2),
-        Triple("Perfil", Icons.Default.Person, 3)
+        Triple("Categorías", Icons.Default.GridView, 1),
+        Triple("Pedidos", Icons.Outlined.Assignment, 2),
+        Triple("Perfil", Icons.Outlined.Person, 3)
     )
     NavigationBar {
         items.forEach { (etiqueta, icono, indice) ->

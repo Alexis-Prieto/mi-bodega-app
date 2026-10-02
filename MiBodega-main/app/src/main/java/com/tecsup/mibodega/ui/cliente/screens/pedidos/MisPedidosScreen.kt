@@ -17,11 +17,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.outlined.Assignment
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -233,9 +233,9 @@ private fun BarraInferior(
     var seleccionado by remember { mutableStateOf(2) } // Pestaña Pedidos (índice 2)
     val items = listOf(
         Triple("Inicio", Icons.Default.Home, 0),
-        Triple("Categorías", Icons.Default.List, 1),
-        Triple("Pedidos", Icons.Default.Receipt, 2),
-        Triple("Perfil", Icons.Default.Person, 3)
+        Triple("Categorías", Icons.Default.GridView, 1),
+        Triple("Pedidos", Icons.Outlined.Assignment, 2),
+        Triple("Perfil", Icons.Outlined.Person, 3)
     )
     NavigationBar {
         items.forEach { (etiqueta, icono, indice) ->
@@ -253,7 +253,8 @@ private fun BarraInferior(
                 label = { Text(etiqueta) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = VerdeBodega,
-                    selectedTextColor = VerdeBodega
+                    selectedTextColor = VerdeBodega,
+                    indicatorColor = VerdeBodega.copy(alpha = 0.15f)
                 )
             )
         }
