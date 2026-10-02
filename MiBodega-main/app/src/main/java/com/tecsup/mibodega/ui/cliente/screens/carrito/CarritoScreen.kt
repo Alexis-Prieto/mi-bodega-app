@@ -44,7 +44,7 @@ import com.tecsup.mibodega.ui.theme.VerdeBodega
 private const val COSTO_DELIVERY = 4.00
 
 /**
- * Pantalla 5: Mi carrito (mockup "Cliente").
+ * Pantalla 5: Mi carrito.
  * No guarda estado propio: el carrito viene de ClienteApp y cualquier
  * cambio (sumar, restar, eliminar) se avisa hacia arriba con callbacks.
  */
@@ -58,7 +58,7 @@ fun CarritoScreen(
     onContinuarPedido: () -> Unit
 ) {
     val subtotal = carrito.sumOf { it.producto.precio * it.cantidad }
-    val total = subtotal + COSTO_DELIVERY
+    val total = if (carrito.isNotEmpty()) subtotal + COSTO_DELIVERY else 0.0
 
     Column(
         modifier = Modifier
@@ -67,33 +67,47 @@ fun CarritoScreen(
     ) {
         EncabezadoCarrito(onVolver = onVolver)
 
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 20.dp),
-            contentPadding = PaddingValues(vertical = 8.dp)
-        ) {
-            items(carrito, key = { it.producto.id }) { item ->
-                FilaCarrito(
-                    item = item,
-                    onIncrementar = { onIncrementar(item.producto) },
-                    onDecrementar = { onDecrementar(item.producto) },
-                    onEliminar = { onEliminar(item.producto) }
+        if (carrito.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Tu carrito está vacío",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             }
-        }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 20.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
+                items(carrito, key = { it.producto.id }) { item ->
+                    FilaCarrito(
+                        item = item,
+                        onIncrementar = { onIncrementar(item.producto) },
+                        onDecrementar = { onDecrementar(item.producto) },
+                        onEliminar = { onEliminar(item.producto) }
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
+            }
 
-        ResumenYBoton(
-            subtotal = subtotal,
-            delivery = COSTO_DELIVERY,
-            total = total,
-            onContinuarPedido = onContinuarPedido
-        )
+            ResumenYBoton(
+                subtotal = subtotal,
+                delivery = COSTO_DELIVERY,
+                total = total,
+                onContinuarPedido = onContinuarPedido
+            )
+        }
     }
 }
-
-// Sub-composables PRIVADOS: solo los usa esta pantalla.
 
 @Composable
 private fun EncabezadoCarrito(onVolver: () -> Unit) {
@@ -125,7 +139,6 @@ private fun FilaCarrito(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Placeholder de imagen: reemplázalo por Image(painterResource(...))
         Box(
             modifier = Modifier
                 .size(56.dp)
@@ -225,9 +238,9 @@ private fun FilaResumen(etiqueta: String, valor: Double) {
 @Composable
 private fun CarritoPreview() {
     val carritoEjemplo = listOf(
-        ItemCarrito(listaProductosFake[4], 1), // Coca-Cola
-        ItemCarrito(listaProductosFake[0], 2), // Arroz Costeño
-        ItemCarrito(listaProductosFake[2], 1)  // Leche Gloria
+        ItemCarrito(listaProductosFake[4], 1),
+        ItemCarrito(listaProductosFake[0], 2),
+        ItemCarrito(listaProductosFake[2], 1)
     )
     BodegaTheme {
         CarritoScreen(
@@ -240,4 +253,3 @@ private fun CarritoPreview() {
         )
     }
 }
-
