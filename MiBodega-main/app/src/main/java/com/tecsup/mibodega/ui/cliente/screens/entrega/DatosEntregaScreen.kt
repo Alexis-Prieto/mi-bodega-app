@@ -50,6 +50,23 @@ fun DatosEntregaScreen(
     var telefono by remember { mutableStateOf("") }
     var referencia by remember { mutableStateOf("") }
 
+    // Control de intento de envío para validar campos vacíos
+    var intentoConfirmar by remember { mutableStateOf(false) }
+
+    val errorDireccion = intentoConfirmar && direccion.trim().isEmpty()
+    val errorTelefono = intentoConfirmar && telefono.trim().isEmpty()
+    val errorReferencia = intentoConfirmar && referencia.trim().isEmpty()
+
+    fun validarYConfirmar() {
+        intentoConfirmar = true
+        if (direccion.trim().isNotEmpty() &&
+            telefono.trim().isNotEmpty() &&
+            referencia.trim().isNotEmpty()
+        ) {
+            onConfirmarPedido()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -75,6 +92,7 @@ fun DatosEntregaScreen(
 
         Spacer(Modifier.height(16.dp))
 
+        // Campo Dirección
         Text(
             text = "Dirección de envío",
             style = MaterialTheme.typography.bodyMedium,
@@ -83,7 +101,10 @@ fun DatosEntregaScreen(
 
         OutlinedTextField(
             value = direccion,
-            onValueChange = { direccion = it },
+            onValueChange = {
+                direccion = it
+            },
+            isError = errorDireccion,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
@@ -94,11 +115,24 @@ fun DatosEntregaScreen(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = GrisClaro,
                 focusedContainerColor = GrisClaro,
+                errorContainerColor = GrisClaro,
                 unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedBorderColor = VerdeBodega
+                focusedBorderColor = VerdeBodega,
+                errorBorderColor = MaterialTheme.colorScheme.error
             )
         )
+        if (errorDireccion) {
+            Text(
+                text = "La dirección es obligatoria",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
+
+        // Campo Teléfono
         Text(
             text = "Teléfono de contacto",
             style = MaterialTheme.typography.bodyMedium,
@@ -107,7 +141,10 @@ fun DatosEntregaScreen(
 
         OutlinedTextField(
             value = telefono,
-            onValueChange = { telefono = it },
+            onValueChange = {
+                telefono = it
+            },
+            isError = errorTelefono,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
@@ -118,19 +155,36 @@ fun DatosEntregaScreen(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = GrisClaro,
                 focusedContainerColor = GrisClaro,
+                errorContainerColor = GrisClaro,
                 unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedBorderColor = VerdeBodega
+                focusedBorderColor = VerdeBodega,
+                errorBorderColor = MaterialTheme.colorScheme.error
             )
         )
+        if (errorTelefono) {
+            Text(
+                text = "El teléfono es obligatorio",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
+
+        // Campo Referencia
         Text(
             text = "Referencia",
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold
         )
+
         OutlinedTextField(
             value = referencia,
-            onValueChange = { referencia = it },
+            onValueChange = {
+                referencia = it
+            },
+            isError = errorReferencia,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
@@ -141,19 +195,31 @@ fun DatosEntregaScreen(
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = GrisClaro,
                 focusedContainerColor = GrisClaro,
+                errorContainerColor = GrisClaro,
                 unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedBorderColor = VerdeBodega
+                focusedBorderColor = VerdeBodega,
+                errorBorderColor = MaterialTheme.colorScheme.error
             )
         )
+        if (errorReferencia) {
+            Text(
+                text = "La referencia es obligatoria",
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
+
         Spacer(Modifier.weight(1f))
 
         BotonPrimario(
             texto = "Confirmar Pedido",
-            onClick = onConfirmarPedido,
+            onClick = { validarYConfirmar() },
             modifier = Modifier.padding(vertical = 24.dp)
         )
     }
 }
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun DatosEntregaPreview() {
