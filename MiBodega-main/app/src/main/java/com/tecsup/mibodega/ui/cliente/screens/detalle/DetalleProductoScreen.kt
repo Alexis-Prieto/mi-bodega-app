@@ -41,6 +41,8 @@ import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.RojoPrecio
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
+// Detalle de producto con seleccion de cantidad y navegacion por parametro
+
 /**
  * Pantalla 4: Detalle del producto (mockup "Cliente").
  * Guarda su propia cantidad seleccionada (remember) mientras el usuario
