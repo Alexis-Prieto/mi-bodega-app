@@ -98,6 +98,9 @@ fun ClienteApp() {
                 },
                 onAgregarProducto = { producto ->
                     carrito = agregarOSumarProducto(carrito, producto, 1)
+                },
+                onNavegarPedidos = {
+                    navController.navigate(Rutas.PEDIDOS)
                 }
             )
         }
@@ -148,7 +151,6 @@ fun ClienteApp() {
             DatosEntregaScreen(
                 onVolver = { navController.popBackStack() },
                 onConfirmarPedido = {
-                    // Generar nuevo registro de pedido en la lista de historial
                     val totalPedido = carrito.sumOf { it.producto.precio * it.cantidad } + 4.0
                     val nuevoPedido = PedidoHistorial(
                         id = "PED-00${historialPedidos.size + 1}",
