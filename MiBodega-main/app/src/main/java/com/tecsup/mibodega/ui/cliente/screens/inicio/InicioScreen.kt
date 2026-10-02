@@ -17,12 +17,12 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -101,9 +101,10 @@ fun InicioScreen(
                 .padding(paddingInterno)
                 .padding(horizontal = 16.dp)
         ) {
+            // Vinculación del estado textoBusqueda con el OutlinedTextField
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = textoBusqueda,
+                onValueChange = { textoBusqueda = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
