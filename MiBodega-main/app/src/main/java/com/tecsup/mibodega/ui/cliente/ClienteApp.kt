@@ -54,6 +54,7 @@ fun ClienteApp() {
 
     // El carrito vive aquí arriba, no en ninguna Screen.
     var carrito by remember { mutableStateOf<List<ItemCarrito>>(emptyList()) }
+    var favoritos by remember { mutableStateOf<Set<Int>>(emptySet()) }
 
     NavHost(
         navController = navController,
@@ -121,6 +122,14 @@ fun ClienteApp() {
                 onAgregarAlCarrito = { productoSeleccionado, cantidad ->
                     carrito = agregarOSumarProducto(carrito, productoSeleccionado, cantidad)
                     navController.popBackStack()
+                },
+                esFavorito = favoritos.contains(producto.id),
+                onToggleFavorito = {
+                    favoritos = if (favoritos.contains(producto.id)) {
+                        favoritos - producto.id
+                    } else {
+                        favoritos + producto.id
+                    }
                 }
             )
         }
