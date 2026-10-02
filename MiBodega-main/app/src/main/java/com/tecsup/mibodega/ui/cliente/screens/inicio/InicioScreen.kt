@@ -213,8 +213,9 @@ fun InicioScreen(
 
             // 2. Categorías (Chips con íconos)
             LazyRow(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(top = 12.dp, bottom = 4.dp)
+                contentPadding = PaddingValues(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 4.dp)
             ) {
                 items(listaCategorias) { categoria ->
                     ChipCategoria(

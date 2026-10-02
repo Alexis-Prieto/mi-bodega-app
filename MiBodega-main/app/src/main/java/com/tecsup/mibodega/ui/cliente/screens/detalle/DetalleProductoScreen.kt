@@ -1,23 +1,24 @@
 package com.tecsup.mibodega.ui.cliente.screens.detalle
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,8 +45,6 @@ import com.tecsup.mibodega.ui.componentes.SelectorCantidad
 import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.RojoPrecio
 import com.tecsup.mibodega.ui.theme.VerdeBodega
-
-// Detalle de producto con seleccion de cantidad y navegacion por parametro
 
 /**
  * Pantalla 4: Detalle del producto (mockup "Cliente").
@@ -57,7 +60,6 @@ fun DetalleProductoScreen(
 ) {
     var cantidad by remember { mutableStateOf(1) }
 
-    // SOLUCIÓN: Surface envolviendo la pantalla para que el fondo se adapte al modo oscuro
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -69,7 +71,8 @@ fun DetalleProductoScreen(
         ) {
             EncabezadoDetalle(onVolver = onVolver)
 
-            ImagenProducto()
+            // Se pasa el producto para renderizar su imagen
+            ImagenProducto(producto = producto)
 
             Column(
                 modifier = Modifier
@@ -80,7 +83,9 @@ fun DetalleProductoScreen(
 
                 Text(
                     text = producto.nombre,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(Modifier.height(4.dp))
@@ -130,31 +135,56 @@ private fun EncabezadoDetalle(onVolver: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onVolver) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Volver",
+                tint = MaterialTheme.colorScheme.onBackground
+            )
         }
         IconButton(onClick = { /* TODO: guardar como favorito */ }) {
-            Icon(Icons.Default.FavoriteBorder, contentDescription = "Favorito")
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder,
+                contentDescription = "Favorito",
+                tint = MaterialTheme.colorScheme.onBackground
+            )
         }
     }
 }
 
 @Composable
-private fun ImagenProducto() {
-    // Placeholder de imagen: reemplázalo por Image(painterResource(...))
-    // cuando tengan la foto real de cada producto.
-    Box(
+private fun ImagenProducto(producto: Producto) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1.4f)
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = Icons.Default.ShoppingBasket,
-            contentDescription = null,
-            tint = VerdeBodega,
-            modifier = Modifier.size(80.dp)
+            .height(260.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White // Mantiene el marco blanco interno limpio en modo oscuro
         )
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            if (producto.imagenRes != 0) {
+                Image(
+                    painter = painterResource(id = producto.imagenRes),
+                    contentDescription = producto.nombre,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.ShoppingBasket,
+                    contentDescription = null,
+                    tint = VerdeBodega,
+                    modifier = Modifier.size(80.dp)
+                )
+            }
+        }
     }
 }
 
@@ -163,7 +193,7 @@ private fun ImagenProducto() {
 private fun DetalleProductoPreview() {
     BodegaTheme {
         DetalleProductoScreen(
-            producto = listaProductosFake.first { it.nombre == "Coca-Cola Original" },
+            producto = listaProductosFake.first(),
             onVolver = {},
             onAgregarAlCarrito = { _, _ -> }
         )

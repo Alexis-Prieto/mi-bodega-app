@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -58,25 +59,36 @@ fun ProductoCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
+            // Marco blanco redondeado para integrar fotos JPG en modo oscuro
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(95.dp),
+                    .height(100.dp)
+                    .background(Color.White, shape = RoundedCornerShape(10.dp))
+                    .padding(6.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Image(
-                    painter = painterResource(id = producto.imagenRes),
-                    contentDescription = producto.nombre,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
+                if (producto.imagenRes != 0) {
+                    Image(
+                        painter = painterResource(id = producto.imagenRes),
+                        contentDescription = producto.nombre,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingBasket,
+                        contentDescription = null,
+                        tint = VerdeBodega,
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
 
                 IconButton(
                     onClick = onToggleFavorito,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(2.dp)
-                        .size(30.dp)
+                        .size(28.dp)
                 ) {
                     Icon(
                         imageVector = if (esFavorito) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
@@ -87,9 +99,9 @@ fun ProductoCard(
                 }
             }
 
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // Nombre
+            // Nombre del producto
             Text(
                 text = producto.nombre,
                 style = MaterialTheme.typography.bodyMedium,
@@ -100,7 +112,7 @@ fun ProductoCard(
             Text(
                 text = producto.presentacion,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

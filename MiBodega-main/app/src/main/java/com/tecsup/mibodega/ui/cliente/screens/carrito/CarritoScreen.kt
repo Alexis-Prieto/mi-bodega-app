@@ -1,6 +1,6 @@
 package com.tecsup.mibodega.ui.cliente.screens.carrito
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingBasket
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -112,7 +117,6 @@ fun CarritoScreen(
         )
     }
 
-    // SOLUCIÓN: Usamos Surface para que el fondo y los textos reaccionen al Modo Oscuro
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -206,19 +210,34 @@ private fun FilaCarrito(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                // SOLUCIÓN: Cambiamos GrisClaro por surfaceVariant para que se adapte
-                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(10.dp)),
-            contentAlignment = Alignment.Center
+        // Tarjeta blanca para mostrar la imagen del producto
+        Card(
+            modifier = Modifier.size(56.dp),
+            shape = RoundedCornerShape(10.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
-            Icon(
-                imageVector = Icons.Default.ShoppingBasket,
-                contentDescription = item.producto.nombre,
-                tint = VerdeBodega,
-                modifier = Modifier.size(26.dp)
-            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                if (item.producto.imagenRes != 0) {
+                    Image(
+                        painter = painterResource(id = item.producto.imagenRes),
+                        contentDescription = item.producto.nombre,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(4.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingBasket,
+                        contentDescription = item.producto.nombre,
+                        tint = VerdeBodega,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.width(12.dp))

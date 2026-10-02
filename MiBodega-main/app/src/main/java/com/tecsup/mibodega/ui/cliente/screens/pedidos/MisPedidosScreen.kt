@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.ReceiptLong
@@ -27,7 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -68,7 +66,6 @@ val listaPedidosFake = listOf(
 @Composable
 fun MisPedidosScreen(
     pedidos: List<PedidoHistorial> = listaPedidosFake,
-    onVolver: (() -> Unit)? = null,
     onNavegarInicio: () -> Unit = {},
     onNavegarCategorias: () -> Unit = {},
     onNavegarPerfil: () -> Unit = {}
@@ -82,17 +79,6 @@ fun MisPedidosScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                },
-                navigationIcon = {
-                    if (onVolver != null) {
-                        IconButton(onClick = onVolver) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Volver",
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                    }
                 }
             )
         },

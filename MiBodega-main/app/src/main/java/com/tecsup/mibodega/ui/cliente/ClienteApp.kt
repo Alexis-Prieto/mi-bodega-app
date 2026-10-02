@@ -198,7 +198,6 @@ fun ClienteApp() {
             composable(Rutas.PEDIDOS) {
                 MisPedidosScreen(
                     pedidos = historialPedidos,
-                    onVolver = { navController.popBackStack() },
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
                     onNavegarCategorias = { /* navegarMenuInferior(Rutas.CATEGORIAS) */ }, // Configura cuando tengas la pantalla
                     onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }

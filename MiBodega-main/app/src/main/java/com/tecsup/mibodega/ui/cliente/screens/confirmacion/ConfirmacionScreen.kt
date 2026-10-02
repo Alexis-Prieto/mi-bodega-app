@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,50 +26,57 @@ import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 /**
  * Pantalla 7: Confirmación de Pedido.
- * Muestra el mensaje final de exito y retorna al inicio limpiando el historial de navegación (popUpTo).
+ * Muestra el mensaje final de éxito y retorna al inicio limpiando el historial de navegación (popUpTo).
  */
 @Composable
 fun ConfirmacionScreen(
     onVolverInicio: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    // Surface asegura que el fondo cambie automáticamente entre blanco y negro/gris oscuro
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Icon(
-            imageVector = Icons.Default.CheckCircle,
-            contentDescription = "Éxito",
-            tint = VerdeBodega,
-            modifier = Modifier.size(96.dp)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = "Éxito",
+                tint = VerdeBodega,
+                modifier = Modifier.size(96.dp)
+            )
 
-        Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
-        Text(
-            text = "¡Pedido Confirmado!",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "¡Pedido Confirmado!",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Text(
-            text = "Tu pedido se ha registrado con éxito. Pronto estará en camino.",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
+            Text(
+                text = "Tu pedido se ha registrado con éxito. Pronto estará en camino.",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
 
-        Spacer(modifier = Modifier.height(36.dp))
+            Spacer(modifier = Modifier.height(36.dp))
 
-        BotonPrimario(
-            texto = "Volver al Inicio",
-            onClick = onVolverInicio
-        )
+            BotonPrimario(
+                texto = "Volver al Inicio",
+                onClick = onVolverInicio
+            )
+        }
     }
 }
 

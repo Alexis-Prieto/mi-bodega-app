@@ -21,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 /**
@@ -67,156 +67,203 @@ fun DatosEntregaScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .safeDrawingPadding()
-            .padding(horizontal = 20.dp)
-            .verticalScroll(rememberScrollState())
+    // Surface define el fondo dinámico de toda la pantalla (claro u oscuro)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
     ) {
-        Row(
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .safeDrawingPadding()
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            IconButton(onClick = onVolver) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onVolver) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Volver",
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+                Text(
+                    text = "Datos de entrega",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
             }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Campo Dirección
             Text(
-                text = "Datos de entrega",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                text = "Dirección de envío",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            OutlinedTextField(
+                value = direccion,
+                onValueChange = { direccion = it },
+                isError = errorDireccion,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                placeholder = {
+                    Text(
+                        "Ej. Av. Primavera 123",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Home,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    errorContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
+                    focusedBorderColor = VerdeBodega,
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                )
+            )
+            if (errorDireccion) {
+                Text(
+                    text = "La dirección es obligatoria",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Campo Teléfono
+            Text(
+                text = "Teléfono de contacto",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            OutlinedTextField(
+                value = telefono,
+                onValueChange = { telefono = it },
+                isError = errorTelefono,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                placeholder = {
+                    Text(
+                        "Ej. 987654321",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.Phone,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    errorContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
+                    focusedBorderColor = VerdeBodega,
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                )
+            )
+            if (errorTelefono) {
+                Text(
+                    text = "El teléfono es obligatorio",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // Campo Referencia
+            Text(
+                text = "Referencia",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            OutlinedTextField(
+                value = referencia,
+                onValueChange = { referencia = it },
+                isError = errorReferencia,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                placeholder = {
+                    Text(
+                        "Ej. Frente al parque / Casa de 2 pisos",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    errorContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
+                    focusedBorderColor = VerdeBodega,
+                    errorBorderColor = MaterialTheme.colorScheme.error
+                )
+            )
+            if (errorReferencia) {
+                Text(
+                    text = "La referencia es obligatoria",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            BotonPrimario(
+                texto = "Confirmar Pedido",
+                onClick = { validarYConfirmar() },
+                modifier = Modifier.padding(vertical = 24.dp)
             )
         }
-
-        Spacer(Modifier.height(16.dp))
-
-        // Campo Dirección
-        Text(
-            text = "Dirección de envío",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        OutlinedTextField(
-            value = direccion,
-            onValueChange = {
-                direccion = it
-            },
-            isError = errorDireccion,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 6.dp),
-            placeholder = { Text("Ej. Av. Primavera 123") },
-            leadingIcon = { Icon(Icons.Default.Home, contentDescription = null) },
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = GrisClaro,
-                focusedContainerColor = GrisClaro,
-                errorContainerColor = GrisClaro,
-                unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedBorderColor = VerdeBodega,
-                errorBorderColor = MaterialTheme.colorScheme.error
-            )
-        )
-        if (errorDireccion) {
-            Text(
-                text = "La dirección es obligatoria",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // Campo Teléfono
-        Text(
-            text = "Teléfono de contacto",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        OutlinedTextField(
-            value = telefono,
-            onValueChange = {
-                telefono = it
-            },
-            isError = errorTelefono,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 6.dp),
-            placeholder = { Text("Ej. 987654321") },
-            leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null) },
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = GrisClaro,
-                focusedContainerColor = GrisClaro,
-                errorContainerColor = GrisClaro,
-                unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedBorderColor = VerdeBodega,
-                errorBorderColor = MaterialTheme.colorScheme.error
-            )
-        )
-        if (errorTelefono) {
-            Text(
-                text = "El teléfono es obligatorio",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // Campo Referencia
-        Text(
-            text = "Referencia",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        OutlinedTextField(
-            value = referencia,
-            onValueChange = {
-                referencia = it
-            },
-            isError = errorReferencia,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 6.dp),
-            placeholder = { Text("Ej. Frente al parque / Casa de 2 pisos") },
-            leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = GrisClaro,
-                focusedContainerColor = GrisClaro,
-                errorContainerColor = GrisClaro,
-                unfocusedBorderColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedBorderColor = VerdeBodega,
-                errorBorderColor = MaterialTheme.colorScheme.error
-            )
-        )
-        if (errorReferencia) {
-            Text(
-                text = "La referencia es obligatoria",
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-            )
-        }
-
-        Spacer(Modifier.weight(1f))
-
-        BotonPrimario(
-            texto = "Confirmar Pedido",
-            onClick = { validarYConfirmar() },
-            modifier = Modifier.padding(vertical = 24.dp)
-        )
     }
 }
 
