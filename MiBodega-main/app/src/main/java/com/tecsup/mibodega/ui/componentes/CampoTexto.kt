@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
  * de Registro y Datos de entrega. Se usa en: Registro, Datos de entrega.
  *
  * @param teclado tipo de teclado, ej. KeyboardType.Phone para el teléfono
+ * @param esError indica si el campo debe marcarse con estado de error (borde rojo)
  */
 @Composable
 fun CampoTexto(
@@ -27,22 +28,23 @@ fun CampoTexto(
     onValorCambia: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String? = null,
-    teclado: KeyboardType = KeyboardType.Text
+    teclado: KeyboardType = KeyboardType.Text,
+    esError: Boolean = false // <-- AGREGADO
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Text(
             text = etiqueta,
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = if (esError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground
         )
         OutlinedTextField(
             value = valor,
             onValueChange = onValorCambia,
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             placeholder = placeholder?.let { { Text(it) } },
             singleLine = true,
+            isError = esError, // <-- AGREGADO (activa el borde rojo de Compose)
             shape = RoundedCornerShape(10.dp),
             keyboardOptions = KeyboardOptions(keyboardType = teclado),
             colors = OutlinedTextFieldDefaults.colors(
