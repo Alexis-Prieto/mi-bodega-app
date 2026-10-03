@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +59,8 @@ fun DatosEntregaScreen(
     onVolver: () -> Unit,
     onConfirmarPedido: (nombre: String, telefono: String, direccion: String, referencia: String) -> Unit
 ) {
+    val focusManager = LocalFocusManager.current
+
     var nombre by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
@@ -70,6 +75,7 @@ fun DatosEntregaScreen(
     val errorReferencia = intentoConfirmar && referencia.trim().isEmpty()
 
     fun validarYConfirmar() {
+        focusManager.clearFocus()
         intentoConfirmar = true
         if (nombre.trim().isNotEmpty() &&
             telefono.trim().isNotEmpty() &&
@@ -89,7 +95,7 @@ fun DatosEntregaScreen(
                 .fillMaxSize()
                 .systemBarsPadding()
         ) {
-            // 1. Encabezado superior completo de borde a borde
+            // 1. Encabezado superior
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -114,13 +120,14 @@ fun DatosEntregaScreen(
                 )
             }
 
-            // 2. Formulario con padding horizontal de 20.dp
+            // 2. Formulario scrolleable limpio
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.SpaceEvenly
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Campo Nombre
                 Column {
@@ -306,7 +313,7 @@ fun DatosEntregaScreen(
                     )
                 }
 
-                // Sección Método de pago
+                // Sección Método de pago (cierra teclado al seleccionar)
                 Column {
                     Text(
                         text = "Método de pago",
@@ -316,34 +323,43 @@ fun DatosEntregaScreen(
                     )
 
                     Column(
-                        modifier = Modifier.padding(top = 2.dp),
-                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                        modifier = Modifier.padding(top = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         OpcionMetodoPago(
                             titulo = "Efectivo al entregar",
                             iconoRes = R.drawable.dinero_icono,
                             seleccionado = metodoPagoSeleccionado == MetodoPago.EFECTIVO,
-                            onSelect = { metodoPagoSeleccionado = MetodoPago.EFECTIVO }
+                            onSelect = {
+                                focusManager.clearFocus()
+                                metodoPagoSeleccionado = MetodoPago.EFECTIVO
+                            }
                         )
 
                         OpcionMetodoPago(
                             titulo = "Yape",
                             iconoRes = R.drawable.logo_yape,
                             seleccionado = metodoPagoSeleccionado == MetodoPago.YAPE,
-                            onSelect = { metodoPagoSeleccionado = MetodoPago.YAPE }
+                            onSelect = {
+                                focusManager.clearFocus()
+                                metodoPagoSeleccionado = MetodoPago.YAPE
+                            }
                         )
 
                         OpcionMetodoPago(
                             titulo = "Plin",
                             iconoRes = R.drawable.logo_plin,
                             seleccionado = metodoPagoSeleccionado == MetodoPago.PLIN,
-                            onSelect = { metodoPagoSeleccionado = MetodoPago.PLIN }
+                            onSelect = {
+                                focusManager.clearFocus()
+                                metodoPagoSeleccionado = MetodoPago.PLIN
+                            }
                         )
                     }
                 }
             }
 
-            // 3. Botón inferior con su padding horizontal
+            // 3. Botón inferior fijo
             BotonPrimario(
                 texto = "Confirmar pedido",
                 onClick = { validarYConfirmar() },

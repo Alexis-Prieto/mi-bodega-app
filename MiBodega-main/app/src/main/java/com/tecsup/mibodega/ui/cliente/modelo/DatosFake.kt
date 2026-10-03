@@ -54,6 +54,6 @@ val listaProductosFake = listOf(
         presentacion = "1.5 L",
         precio = 6.50,
         categoria = "Bebidas",
-        imagenRes = R.drawable.cocacola_imagen
+        imagenRes = R.drawable.cola_imagen
     )
 )
