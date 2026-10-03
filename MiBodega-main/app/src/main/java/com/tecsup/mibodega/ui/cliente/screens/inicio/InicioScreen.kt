@@ -95,6 +95,7 @@ fun InicioScreen(
     onProductoClick: (Producto) -> Unit,
     onAgregarProducto: (Producto) -> Unit,
     onToggleFavorito: (Producto) -> Unit = {},
+    onNavegarCategorias: () -> Unit = {}, // <-- 1. Agregado parámetro
     onNavegarPedidos: () -> Unit = {},
     onNavegarFavoritos: () -> Unit = {},
     onNavegarPerfil: () -> Unit = {}
@@ -153,6 +154,7 @@ fun InicioScreen(
         },
         bottomBar = {
             BarraInferior(
+                onNavegarCategorias = onNavegarCategorias, // <-- 2. Pasado a la barra inferior
                 onNavegarPedidos = onNavegarPedidos,
                 onNavegarPerfil = onNavegarPerfil
             )
@@ -246,7 +248,7 @@ fun InicioScreen(
                 }
             }
 
-            // 4. Título de productos destacados (Ubicado justo abajo del filtro de precios)
+            // 4. Título de productos destacados
             Text(
                 text = "Productos destacados",
                 style = MaterialTheme.typography.titleMedium,
@@ -347,6 +349,7 @@ private fun obtenerIconoCategoria(categoria: String): Int {
 
 @Composable
 private fun BarraInferior(
+    onNavegarCategorias: () -> Unit = {}, // <-- 3. Agregado parámetro a BarraInferior
     onNavegarPedidos: () -> Unit = {},
     onNavegarPerfil: () -> Unit = {}
 ) {
@@ -357,13 +360,14 @@ private fun BarraInferior(
         Triple("Pedidos", Icons.Outlined.Assignment, 2),
         Triple("Perfil", Icons.Outlined.Person, 3)
     )
-    NavigationBar (containerColor = MaterialTheme.colorScheme.surface,tonalElevation = 0.dp) {
+    NavigationBar (containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
         items.forEach { (etiqueta, icono, indice) ->
             NavigationBarItem(
                 selected = seleccionado == indice,
                 onClick = {
                     seleccionado = indice
                     when (indice) {
+                        1 -> onNavegarCategorias() // <-- 4. Ejecutar navegación al tocar Categorías
                         2 -> onNavegarPedidos()
                         3 -> onNavegarPerfil()
                     }
@@ -390,6 +394,7 @@ private fun InicioPreview() {
             onProductoClick = {},
             onAgregarProducto = {},
             onToggleFavorito = {},
+            onNavegarCategorias = {},
             onNavegarPedidos = {},
             onNavegarFavoritos = {},
             onNavegarPerfil = {}

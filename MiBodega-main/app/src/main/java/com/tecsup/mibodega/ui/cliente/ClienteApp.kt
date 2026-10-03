@@ -15,6 +15,7 @@ import com.tecsup.mibodega.ui.cliente.modelo.Producto
 import com.tecsup.mibodega.ui.cliente.modelo.listaProductosFake
 import com.tecsup.mibodega.ui.cliente.screens.bienvenida.BienvenidaScreen
 import com.tecsup.mibodega.ui.cliente.screens.carrito.CarritoScreen
+import com.tecsup.mibodega.ui.cliente.screens.categoria.CategoriasScreen
 import com.tecsup.mibodega.ui.cliente.screens.confirmacion.ConfirmacionScreen
 import com.tecsup.mibodega.ui.cliente.screens.detalle.DetalleProductoScreen
 import com.tecsup.mibodega.ui.cliente.screens.entrega.DatosEntregaScreen
@@ -33,6 +34,7 @@ private object Rutas {
     const val REGISTRO = "registro"
     const val LOGIN = "login"
     const val INICIO = "inicio"
+    const val CATEGORIAS = "categorias" // <-- 1. Agregada la ruta
     const val DETALLE = "detalle/{productoId}"
     const val CARRITO = "carrito"
     const val ENTREGA = "entrega"
@@ -119,12 +121,35 @@ fun ClienteApp() {
                             favoritosIds + producto.id
                         }
                     },
+                    onNavegarCategorias = { navegarMenuInferior(Rutas.CATEGORIAS) }, // <-- 2. Enlazado aquí
                     onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) },
                     onNavegarFavoritos = { navController.navigate(Rutas.FAVORITOS) },
                     onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }
                 )
             }
 
+            composable(Rutas.CATEGORIAS) {
+                CategoriasScreen(
+                    productos = listaProductosFake,
+                    favoritosIds = favoritosIds,
+                    onProductoClick = { producto ->
+                        navController.navigate(Rutas.detalle(producto.id))
+                    },
+                    onAgregarProducto = { producto ->
+                        carrito = agregarOSumarProducto(carrito, producto, 1)
+                    },
+                    onToggleFavorito = { producto ->
+                        favoritosIds = if (favoritosIds.contains(producto.id)) {
+                            favoritosIds - producto.id
+                        } else {
+                            favoritosIds + producto.id
+                        }
+                    },
+                    onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
+                    onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) },
+                    onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }
+                )
+            }
             composable(
                 route = Rutas.DETALLE,
                 arguments = listOf(navArgument("productoId") { type = NavType.IntType })
@@ -139,7 +164,9 @@ fun ClienteApp() {
                         favoritosIds = if (favoritosIds.contains(producto.id)) {
                             favoritosIds - producto.id
                         } else {
-                            favoritosIds + producto.id } },
+                            favoritosIds + producto.id
+                        }
+                    },
                     onAgregarAlCarrito = { productoSeleccionado, cantidad ->
                         carrito = agregarOSumarProducto(carrito, productoSeleccionado, cantidad)
                         navController.popBackStack()
@@ -225,7 +252,7 @@ fun ClienteApp() {
                 MisPedidosScreen(
                     pedidos = historialPedidos,
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
-                    onNavegarCategorias = {},
+                    onNavegarCategorias = { navegarMenuInferior(Rutas.CATEGORIAS) }, // <-- 4. Corregido
                     onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }
                 )
             }
@@ -253,7 +280,7 @@ fun ClienteApp() {
                     onModoOscuroChanged = { esModoOscuro = it },
                     onVolver = { navController.popBackStack() },
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
-                    onNavegarCategorias = {},
+                    onNavegarCategorias = { navegarMenuInferior(Rutas.CATEGORIAS) }, // <-- 5. Corregido
                     onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) }
                 )
             }
