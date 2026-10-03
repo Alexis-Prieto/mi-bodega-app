@@ -135,6 +135,11 @@ fun ClienteApp() {
                 DetalleProductoScreen(
                     producto = producto,
                     onVolver = { navController.popBackStack() },
+                    onToggleFavorito = {
+                        favoritosIds = if (favoritosIds.contains(producto.id)) {
+                            favoritosIds - producto.id
+                        } else {
+                            favoritosIds + producto.id } },
                     onAgregarAlCarrito = { productoSeleccionado, cantidad ->
                         carrito = agregarOSumarProducto(carrito, productoSeleccionado, cantidad)
                         navController.popBackStack()

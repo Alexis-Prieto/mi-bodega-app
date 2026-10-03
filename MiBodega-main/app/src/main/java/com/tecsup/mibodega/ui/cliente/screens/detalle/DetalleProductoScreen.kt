@@ -62,6 +62,8 @@ fun DetalleProductoScreen(
     onAgregarAlCarrito: (Producto, Int) -> Unit
 ) {
     var cantidad by remember { mutableStateOf(1) }
+    // Estado local para que reaccione el icono de corazón al hacer clic
+    var favoritoActual by remember(esFavorito) { mutableStateOf(esFavorito) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -74,8 +76,11 @@ fun DetalleProductoScreen(
         ) {
             EncabezadoDetalle(
                 onVolver = onVolver,
-                esFavorito = esFavorito,
-                onToggleFavorito = onToggleFavorito
+                esFavorito = favoritoActual,
+                onToggleFavorito = {
+                    favoritoActual = !favoritoActual
+                    onToggleFavorito()
+                }
             )
 
             // Contenido principal scrolleable
