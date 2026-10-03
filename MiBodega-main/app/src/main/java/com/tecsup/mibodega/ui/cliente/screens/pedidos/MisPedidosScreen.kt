@@ -56,8 +56,7 @@ data class PedidoHistorial(
 )
 
 val listaPedidosFake = listOf(
-    PedidoHistorial("PED-001", "24 Oct 2024", "Entregado", 3, 35.50),
-    PedidoHistorial("PED-002", "26 Oct 2024", "En camino", 2, 18.00)
+    PedidoHistorial("PED-01", "24 Oct 2024", "Entregado", 3, 35.50),
 )
 
 /**
@@ -217,7 +216,7 @@ private fun BarraInferior(
     onNavegarCategorias: () -> Unit = {},
     onNavegarPerfil: () -> Unit = {}
 ) {
-    var seleccionado by remember { mutableStateOf(2) } // Pestaña Pedidos (índice 2)
+    var seleccionado by remember { mutableStateOf(2) }
     val items = listOf(
         Triple("Inicio", Icons.Default.Home, 0),
         Triple("Categorías", Icons.Default.GridView, 1),

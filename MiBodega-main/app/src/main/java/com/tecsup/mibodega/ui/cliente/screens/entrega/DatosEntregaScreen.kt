@@ -54,7 +54,7 @@ enum class MetodoPago {
 @Composable
 fun DatosEntregaScreen(
     onVolver: () -> Unit,
-    onConfirmarPedido: () -> Unit
+    onConfirmarPedido: (nombre: String, telefono: String, direccion: String, referencia: String) -> Unit
 ) {
     var nombre by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
@@ -76,7 +76,7 @@ fun DatosEntregaScreen(
             direccion.trim().isNotEmpty() &&
             referencia.trim().isNotEmpty()
         ) {
-            onConfirmarPedido()
+            onConfirmarPedido(nombre, telefono, direccion, referencia)
         }
     }
 
@@ -408,7 +408,7 @@ private fun DatosEntregaPreview() {
     BodegaTheme {
         DatosEntregaScreen(
             onVolver = {},
-            onConfirmarPedido = {}
+            onConfirmarPedido = { _, _, _, _ -> }
         )
     }
 }

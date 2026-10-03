@@ -1,9 +1,5 @@
 package com.tecsup.mibodega.ui.cliente
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,8 +53,11 @@ fun ClienteApp() {
     var carrito by remember { mutableStateOf<List<ItemCarrito>>(emptyList()) }
     var historialPedidos by remember { mutableStateOf(listaPedidosFake) }
     var favoritosIds by remember { mutableStateOf(setOf<Int>()) }
+    var ultimoNumeroPedido by remember { mutableStateOf("") }
+    var ultimoTotalPedido by remember { mutableStateOf("") }
+    var ultimaDireccion by remember { mutableStateOf("") }
+    var ultimaReferencia by remember { mutableStateOf("") }
 
-    // Función auxiliar para navegar desde la barra inferior sin acumular pantallas
     val navegarMenuInferior = { ruta: String ->
         navController.navigate(ruta) {
             popUpTo(navController.graph.startDestinationId) { saveState = true }
@@ -70,35 +69,7 @@ fun ClienteApp() {
     BodegaTheme(darkTheme = esModoOscuro) {
         NavHost(
             navController = navController,
-            startDestination = Rutas.BIENVENIDA,
-            // Animación de entrada al ir hacia adelante
-            enterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            // Animación de salida al ir hacia adelante
-            exitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            },
-            // Animación de entrada al regresar (Atrás)
-            popEnterTransition = {
-                slideIntoContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(300)
-                ) + fadeIn(animationSpec = tween(300))
-            },
-            // Animación de salida al regresar (Atrás)
-            popExitTransition = {
-                slideOutOfContainer(
-                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                    animationSpec = tween(300)
-                ) + fadeOut(animationSpec = tween(300))
-            }
+            startDestination = Rutas.BIENVENIDA
         ) {
             composable(Rutas.BIENVENIDA) {
                 BienvenidaScreen(
@@ -122,7 +93,7 @@ fun ClienteApp() {
             composable(Rutas.REGISTRO) {
                 RegistroScreen(
                     onVolver = { navController.popBackStack() },
-                    onCrearCuenta = { _, _, _, _ ->
+                    onCrearCuenta = { nombre, telefono, direccion, referencia ->
                         navController.navigate(Rutas.INICIO) {
                             popUpTo(Rutas.BIENVENIDA) { inclusive = true }
                         }
@@ -163,15 +134,7 @@ fun ClienteApp() {
 
                 DetalleProductoScreen(
                     producto = producto,
-                    esFavorito = favoritosIds.contains(producto.id),
                     onVolver = { navController.popBackStack() },
-                    onToggleFavorito = {
-                        favoritosIds = if (favoritosIds.contains(producto.id)) {
-                            favoritosIds - producto.id
-                        } else {
-                            favoritosIds + producto.id
-                        }
-                    },
                     onAgregarAlCarrito = { productoSeleccionado, cantidad ->
                         carrito = agregarOSumarProducto(carrito, productoSeleccionado, cantidad)
                         navController.popBackStack()
@@ -207,16 +170,26 @@ fun ClienteApp() {
             composable(Rutas.ENTREGA) {
                 DatosEntregaScreen(
                     onVolver = { navController.popBackStack() },
-                    onConfirmarPedido = {
+                    onConfirmarPedido = { nombre, telefono, direccion, referencia ->
                         val totalPedido = carrito.sumOf { it.producto.precio * it.cantidad } + 4.0
+                        val correlativo = historialPedidos.size + 1
+                        val numPedido = "%02d".format(correlativo)
+                        val totalFormateado = "S/ %.2f".format(totalPedido)
+
+                        ultimoNumeroPedido = numPedido
+                        ultimoTotalPedido = totalFormateado
+                        ultimaDireccion = direccion
+                        ultimaReferencia = referencia
+
                         val nuevoPedido = PedidoHistorial(
-                            id = "PED-00${historialPedidos.size + 1}",
+                            id = "PED-$numPedido",
                             fecha = "Hoy",
                             estado = "En camino",
                             cantidadProductos = carrito.sumOf { it.cantidad },
                             total = totalPedido
                         )
                         historialPedidos = listOf(nuevoPedido) + historialPedidos
+
                         navController.navigate(Rutas.CONFIRMACION)
                     }
                 )
@@ -224,6 +197,16 @@ fun ClienteApp() {
 
             composable(Rutas.CONFIRMACION) {
                 ConfirmacionScreen(
+                    numeroPedido = ultimoNumeroPedido,
+                    total = ultimoTotalPedido,
+                    direccion = ultimaDireccion,
+                    referencia = ultimaReferencia,
+                    onVerEstadoPedido = {
+                        carrito = emptyList()
+                        navController.navigate(Rutas.PEDIDOS) {
+                            popUpTo(Rutas.INICIO) { inclusive = false }
+                        }
+                    },
                     onVolverInicio = {
                         carrito = emptyList()
                         navController.navigate(Rutas.INICIO) {
@@ -237,7 +220,7 @@ fun ClienteApp() {
                 MisPedidosScreen(
                     pedidos = historialPedidos,
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
-                    onNavegarCategorias = { /* TODO: navegarMenuInferior(Rutas.CATEGORIAS) */ },
+                    onNavegarCategorias = {},
                     onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }
                 )
             }
@@ -265,7 +248,7 @@ fun ClienteApp() {
                     onModoOscuroChanged = { esModoOscuro = it },
                     onVolver = { navController.popBackStack() },
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
-                    onNavegarCategorias = { /* TODO: navegarMenuInferior(Rutas.CATEGORIAS) */ },
+                    onNavegarCategorias = {},
                     onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) }
                 )
             }
