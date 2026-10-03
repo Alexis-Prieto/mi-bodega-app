@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.componentes.CampoTexto
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.GrisClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 
@@ -58,11 +57,12 @@ fun RegistroScreen(
     // Estado para controlar el intento de envío del formulario
     var intentoSubmit by remember { mutableStateOf(false) }
 
-    val hayCamposVacios = nombre.isBlank() || telefono.isBlank() || direccion.isBlank()
+    val hayCamposVacios = nombre.isBlank() || telefono.isBlank() || direccion.isBlank() || referencia.isBlank()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 24.dp)
@@ -81,7 +81,7 @@ fun RegistroScreen(
                 tint = VerdeBodega,
                 modifier = Modifier
                     .size(84.dp)
-                    .background(GrisClaro, CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                     .padding(4.dp)
             )
         }
@@ -120,7 +120,8 @@ fun RegistroScreen(
             etiqueta = "Referencia",
             valor = referencia,
             onValorCambia = { referencia = it },
-            placeholder = "Frente al parque"
+            placeholder = "Frente al parque",
+            esError = intentoSubmit && referencia.isBlank()
         )
 
         // Mensaje de error si hay intento de envío con datos obligatorios vacíos
@@ -162,11 +163,16 @@ private fun EncabezadoRegistro(onVolver: () -> Unit) {
             onClick = onVolver,
             modifier = Modifier.offset(x = (-58).dp)
         ) {
-            Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Volver",
+                tint = MaterialTheme.colorScheme.onBackground // ✅ Color adaptativo para la flecha
+            )
         }
         Text(
             text = "Crear cuenta",
             style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground, // ✅ Color adaptativo para el título
             modifier = Modifier.weight(1f, fill = false)
         )
         Spacer(Modifier.size(48.dp))

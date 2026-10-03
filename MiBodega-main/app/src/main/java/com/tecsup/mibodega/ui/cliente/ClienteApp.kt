@@ -27,6 +27,7 @@ import com.tecsup.mibodega.ui.cliente.screens.pedidos.PedidoHistorial
 import com.tecsup.mibodega.ui.cliente.screens.pedidos.listaPedidosFake
 import com.tecsup.mibodega.ui.cliente.screens.perfil.PerfilScreen
 import com.tecsup.mibodega.ui.cliente.screens.registro.RegistroScreen
+import com.tecsup.mibodega.ui.cliente.screens.terminos.TerminosScreen
 import com.tecsup.mibodega.ui.theme.BodegaTheme
 
 private object Rutas {
@@ -34,7 +35,9 @@ private object Rutas {
     const val REGISTRO = "registro"
     const val LOGIN = "login"
     const val INICIO = "inicio"
-    const val CATEGORIAS = "categorias" // <-- 1. Agregada la ruta
+
+    const val TERMINOS = "terminos"
+    const val CATEGORIAS = "categorias"
     const val DETALLE = "detalle/{productoId}"
     const val CARRITO = "carrito"
     const val ENTREGA = "entrega"
@@ -77,7 +80,7 @@ fun ClienteApp() {
                 BienvenidaScreen(
                     onRegistrarse = { navController.navigate(Rutas.REGISTRO) },
                     onIniciarSesion = { navController.navigate(Rutas.LOGIN) },
-                    onTerminos = { /* TODO: abrir términos y condiciones */ }
+                    onTerminos = { navController.navigate(Rutas.TERMINOS)}
                 )
             }
 
@@ -125,6 +128,12 @@ fun ClienteApp() {
                     onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) },
                     onNavegarFavoritos = { navController.navigate(Rutas.FAVORITOS) },
                     onNavegarPerfil = { navegarMenuInferior(Rutas.PERFIL) }
+                )
+            }
+
+            composable(Rutas.TERMINOS) {
+                TerminosScreen(
+                    onVolver = { navController.popBackStack() }
                 )
             }
 
@@ -280,8 +289,22 @@ fun ClienteApp() {
                     onModoOscuroChanged = { esModoOscuro = it },
                     onVolver = { navController.popBackStack() },
                     onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
-                    onNavegarCategorias = { navegarMenuInferior(Rutas.CATEGORIAS) }, // <-- 5. Corregido
+                    onNavegarCategorias = { navegarMenuInferior(Rutas.CATEGORIAS) },
                     onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) }
+                )
+            }
+            composable(Rutas.PERFIL) {
+                PerfilScreen(
+                    esModoOscuro = esModoOscuro,
+                    onModoOscuroChanged = { esModoOscuro = it },
+                    onNavegarInicio = { navegarMenuInferior(Rutas.INICIO) },
+                    onNavegarCategorias = { navegarMenuInferior(Rutas.CATEGORIAS) },
+                    onNavegarPedidos = { navegarMenuInferior(Rutas.PEDIDOS) },
+                    onCerrarSesion = {
+                        navController.navigate(Rutas.BIENVENIDA) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 )
             }
         }

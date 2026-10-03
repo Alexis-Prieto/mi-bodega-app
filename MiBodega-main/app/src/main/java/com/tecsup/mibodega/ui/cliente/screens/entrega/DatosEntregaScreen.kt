@@ -146,7 +146,7 @@ fun DatosEntregaScreen(
                             .padding(top = 2.dp),
                         placeholder = {
                             Text(
-                                "Juan Pérez",
+                                "",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 fontSize = 14.sp
                             )
@@ -192,7 +192,7 @@ fun DatosEntregaScreen(
                             .padding(top = 2.dp),
                         placeholder = {
                             Text(
-                                "987 654 321",
+                                "",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 fontSize = 14.sp
                             )
@@ -238,7 +238,7 @@ fun DatosEntregaScreen(
                             .padding(top = 2.dp),
                         placeholder = {
                             Text(
-                                "Av. Los Olivos 123",
+                                "",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 fontSize = 14.sp
                             )
@@ -284,7 +284,7 @@ fun DatosEntregaScreen(
                             .padding(top = 2.dp),
                         placeholder = {
                             Text(
-                                "Frente al parque",
+                                "",
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 fontSize = 14.sp
                             )

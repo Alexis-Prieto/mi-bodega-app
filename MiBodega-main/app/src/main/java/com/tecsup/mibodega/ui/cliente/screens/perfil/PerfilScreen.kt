@@ -1,6 +1,8 @@
 package com.tecsup.mibodega.ui.cliente.screens.perfil
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,13 +15,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Assignment
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Person as OutlinedPerson
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,6 +35,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,8 +58,11 @@ fun PerfilScreen(
     onVolver: () -> Unit = {},
     onNavegarInicio: () -> Unit = {},
     onNavegarCategorias: () -> Unit = {},
-    onNavegarPedidos: () -> Unit = {}
+    onNavegarPedidos: () -> Unit = {},
+    onCerrarSesion: () -> Unit = {}
 ) {
+    var mostrarDialogoCerrarSesion by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -163,7 +169,76 @@ fun PerfilScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Opción de Configuración: Cerrar Sesión
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { mostrarDialogoCerrarSesion = true },
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.Logout,
+                        contentDescription = "Cerrar sesión",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(
+                        text = "Cerrar sesión",
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
         }
+    }
+
+    // Diálogo de confirmación para Cerrar Sesión
+    if (mostrarDialogoCerrarSesion) {
+        AlertDialog(
+            onDismissRequest = { mostrarDialogoCerrarSesion = false },
+            title = {
+                Text(
+                    text = "Cerrar sesión",
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text("¿Estás seguro de que deseas salir de tu cuenta?")
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        mostrarDialogoCerrarSesion = false
+                        onCerrarSesion()
+                    }
+                ) {
+                    Text(
+                        text = "Sí, salir",
+                        color = MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { mostrarDialogoCerrarSesion = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
     }
 }
 
@@ -173,14 +248,14 @@ private fun BarraInferior(
     onNavegarCategorias: () -> Unit = {},
     onNavegarPedidos: () -> Unit = {}
 ) {
-    var seleccionado by remember { mutableStateOf(3) } // Pestaña Perfil (índice 3)
+    var seleccionado by remember { mutableStateOf(3) }
     val items = listOf(
         Triple("Inicio", Icons.Default.Home, 0),
         Triple("Categorías", Icons.Default.GridView, 1),
         Triple("Pedidos", Icons.Outlined.Assignment, 2),
         Triple("Perfil", Icons.Outlined.Person, 3)
     )
-    NavigationBar (containerColor = MaterialTheme.colorScheme.surface,tonalElevation = 0.dp) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface, tonalElevation = 0.dp) {
         items.forEach { (etiqueta, icono, indice) ->
             NavigationBarItem(
                 selected = seleccionado == indice,

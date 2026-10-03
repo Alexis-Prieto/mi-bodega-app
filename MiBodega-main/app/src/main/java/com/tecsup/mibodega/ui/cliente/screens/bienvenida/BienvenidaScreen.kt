@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.MaterialTheme
@@ -19,8 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -33,7 +32,6 @@ import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.componentes.BotonSecundario
 import com.tecsup.mibodega.ui.theme.AzulEnlace
 import com.tecsup.mibodega.ui.theme.BodegaTheme
-import com.tecsup.mibodega.ui.theme.FondoClaro
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
 /**
@@ -49,12 +47,7 @@ fun BienvenidaScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(FondoClaro, MaterialTheme.colorScheme.background),
-                    endY = 900f
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
             .safeDrawingPadding()
             .padding(horizontal = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -63,7 +56,7 @@ fun BienvenidaScreen(
 
         IlustracionBodega()
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(13.dp))
 
         TituloMiBodega()
 
@@ -81,7 +74,7 @@ fun BienvenidaScreen(
         BotonPrimario(
             texto = "Registrarme",
             subtexto = "con mi teléfono",
-            icono = rememberVectorPainter(Icons.Default.Phone),
+            icono = painterResource(id = R.drawable.wsp_logo),
             onClick = onRegistrarse
         )
 
@@ -107,13 +100,14 @@ private fun IlustracionBodega() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(260.dp),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(R.drawable.imagen_tienda),
+            painter = painterResource(R.drawable.logo_principal),
             contentDescription = "Ilustración de la bodega",
-            modifier = Modifier.size(340.dp)
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.fillMaxWidth(0.8f)
         )
     }
 }
@@ -154,4 +148,3 @@ private fun BienvenidaPreview() {
         BienvenidaScreen({}, {}, {})
     }
 }
-

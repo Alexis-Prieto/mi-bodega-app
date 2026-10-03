@@ -1,5 +1,6 @@
 package com.tecsup.mibodega.ui.cliente.screens.login
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,6 +70,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .safeDrawingPadding()
             .padding(horizontal = 24.dp)
     ) {
@@ -76,8 +80,12 @@ fun LoginScreen(
                 .padding(top = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onVolver) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
+            IconButton(onClick = onVolver, modifier = Modifier.offset(x = (-14).dp)) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Volver",
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
             }
         }
 
@@ -102,6 +110,20 @@ fun LoginScreen(
                 modifier = Modifier.padding(top = 8.dp, bottom = 32.dp)
             )
 
+            // Colores explícitos para resolver el contraste en los OutlinedTextField
+            val coloresCampos = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                focusedLabelColor = VerdeBodega,
+                unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedLeadingIconColor = VerdeBodega,
+                unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedTrailingIconColor = VerdeBodega,
+                unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedBorderColor = VerdeBodega,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline
+            )
+
             // Campo Usuario
             OutlinedTextField(
                 value = usuario,
@@ -114,6 +136,7 @@ fun LoginScreen(
                 leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) },
                 singleLine = true,
                 isError = mensajeError != null,
+                colors = coloresCampos,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             )
@@ -132,7 +155,7 @@ fun LoginScreen(
                 trailingIcon = {
                     IconButton(onClick = { claveVisible = !claveVisible }) {
                         Icon(
-                            imageVector = if (claveVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            imageVector = if (claveVisible) androidx.compose.material.icons.Icons.Default.VisibilityOff else androidx.compose.material.icons.Icons.Default.Visibility,
                             contentDescription = null
                         )
                     }
@@ -145,6 +168,7 @@ fun LoginScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = { validarIngreso() }),
                 isError = mensajeError != null,
+                colors = coloresCampos,
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp)
             )
