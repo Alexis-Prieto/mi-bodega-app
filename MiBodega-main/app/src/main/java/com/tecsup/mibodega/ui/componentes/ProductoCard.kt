@@ -59,7 +59,6 @@ fun ProductoCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
-            // Marco blanco redondeado para integrar fotos JPG en modo oscuro
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

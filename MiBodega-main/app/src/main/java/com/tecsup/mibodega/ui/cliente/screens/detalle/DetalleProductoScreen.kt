@@ -9,14 +9,22 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.ShoppingBasket
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -40,22 +48,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tecsup.mibodega.ui.cliente.modelo.Producto
 import com.tecsup.mibodega.ui.cliente.modelo.listaProductosFake
-import com.tecsup.mibodega.ui.componentes.BotonPrimario
 import com.tecsup.mibodega.ui.componentes.SelectorCantidad
 import com.tecsup.mibodega.ui.theme.BodegaTheme
 import com.tecsup.mibodega.ui.theme.RojoPrecio
 import com.tecsup.mibodega.ui.theme.VerdeBodega
 
-/**
- * Pantalla 4: Detalle del producto (mockup "Cliente").
- * Guarda su propia cantidad seleccionada (remember) mientras el usuario
- * decide cuánto quiere; solo al tocar "Agregar al carrito" le avisa
- * a ClienteApp cuánto agregar.
- */
 @Composable
 fun DetalleProductoScreen(
     producto: Producto,
+    esFavorito: Boolean = false,
     onVolver: () -> Unit,
+    onToggleFavorito: () -> Unit = {},
     onAgregarAlCarrito: (Producto, Int) -> Unit
 ) {
     var cantidad by remember { mutableStateOf(1) }
@@ -69,64 +72,117 @@ fun DetalleProductoScreen(
                 .fillMaxSize()
                 .safeDrawingPadding()
         ) {
-            EncabezadoDetalle(onVolver = onVolver)
+            EncabezadoDetalle(
+                onVolver = onVolver,
+                esFavorito = esFavorito,
+                onToggleFavorito = onToggleFavorito
+            )
 
-            // Se pasa el producto para renderizar su imagen
-            ImagenProducto(producto = producto)
-
+            // Contenido principal scrolleable
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .padding(horizontal = 24.dp)
+                    .verticalScroll(rememberScrollState())
             ) {
+                // Contenedor de la imagen
+                ImagenProducto(producto = producto)
+
                 Spacer(Modifier.height(16.dp))
 
+                // Título
                 Text(
                     text = producto.nombre,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                Spacer(Modifier.height(4.dp))
+                // Cantidad / Presentación
+                Text(
+                    text = producto.presentacion,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
 
+                Spacer(Modifier.height(8.dp))
+
+                // Precio
                 Text(
                     text = "S/ %.2f".format(producto.precio),
-                    style = MaterialTheme.typography.displayMedium.copy(fontSize = 26.sp),
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 26.sp),
+                    fontWeight = FontWeight.Bold,
                     color = RojoPrecio
                 )
 
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(8.dp))
 
+                // Descripción
                 Text(
                     text = producto.descripcion,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 20.sp
                 )
 
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(36.dp))
 
+                // Selector de cantidad con proporción exacta de la referencia (160dp x 50dp)
                 SelectorCantidad(
                     cantidad = cantidad,
                     onIncrementar = { cantidad++ },
-                    onDecrementar = { if (cantidad > 1) cantidad-- }
+                    onDecrementar = { if (cantidad > 1) cantidad-- },
+                    modifier = Modifier
+                        .width(160.dp)
+                        .height(50.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
 
-                Spacer(Modifier.weight(1f))
+                Spacer(Modifier.height(36.dp))
+            }
 
-                BotonPrimario(
-                    texto = "Agregar al carrito",
-                    onClick = { onAgregarAlCarrito(producto, cantidad) }
-                )
-
-                Spacer(Modifier.height(24.dp))
+            // Botón fijo inferior con margen seguro para navegación
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(start = 24.dp, end = 24.dp, top = 8.dp, bottom = 20.dp)
+            ) {
+                Button(
+                    onClick = { onAgregarAlCarrito(producto, cantidad) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = VerdeBodega)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingCart,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Agregar al carrito",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun EncabezadoDetalle(onVolver: () -> Unit) {
+private fun EncabezadoDetalle(
+    onVolver: () -> Unit,
+    esFavorito: Boolean,
+    onToggleFavorito: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,11 +197,11 @@ private fun EncabezadoDetalle(onVolver: () -> Unit) {
                 tint = MaterialTheme.colorScheme.onBackground
             )
         }
-        IconButton(onClick = { /* TODO: guardar como favorito */ }) {
+        IconButton(onClick = onToggleFavorito) {
             Icon(
-                imageVector = Icons.Default.FavoriteBorder,
+                imageVector = if (esFavorito) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                 contentDescription = "Favorito",
-                tint = MaterialTheme.colorScheme.onBackground
+                tint = if (esFavorito) Color.Red else MaterialTheme.colorScheme.onBackground
             )
         }
     }
@@ -157,11 +213,11 @@ private fun ImagenProducto(producto: Producto) {
         modifier = Modifier
             .fillMaxWidth()
             .height(260.dp)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(16.dp),
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White // Mantiene el marco blanco interno limpio en modo oscuro
-        )
+            containerColor = Color.White
+        ),
     ) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -194,7 +250,9 @@ private fun DetalleProductoPreview() {
     BodegaTheme {
         DetalleProductoScreen(
             producto = listaProductosFake.first(),
+            esFavorito = true,
             onVolver = {},
+            onToggleFavorito = {},
             onAgregarAlCarrito = { _, _ -> }
         )
     }

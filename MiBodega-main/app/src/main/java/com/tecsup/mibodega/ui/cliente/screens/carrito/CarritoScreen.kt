@@ -255,10 +255,16 @@ private fun FilaCarrito(
             )
         }
 
+        Spacer(Modifier.width(8.dp))
+
+        // Selector de cantidad con tamaño compacto para la fila del carrito
         SelectorCantidad(
             cantidad = item.cantidad,
             onIncrementar = onIncrementar,
-            onDecrementar = onDecrementar
+            onDecrementar = onDecrementar,
+            modifier = Modifier
+                .width(110.dp)
+                .height(38.dp)
         )
 
         IconButton(onClick = onEliminar) {

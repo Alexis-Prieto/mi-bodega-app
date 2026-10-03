@@ -1,8 +1,12 @@
 package com.tecsup.mibodega.ui.componentes
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -11,10 +15,12 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -24,12 +30,6 @@ import com.tecsup.mibodega.ui.theme.VerdeBodega
 /**
  * El "− cantidad +" reutilizable. Se usa en: Detalle del producto
  * y en cada fila del Carrito.
- *
- * No sabe nada de productos ni de carrito: solo recibe un número
- * y avisa cuándo debe subir o bajar (así no se acopla a ningún modelo
- * de datos específico, y se puede reusar en cualquier pantalla).
- *
- * @param minimo cantidad mínima permitida (por defecto 1: no deja bajar de ahí)
  */
 @Composable
 fun SelectorCantidad(
@@ -39,34 +39,44 @@ fun SelectorCantidad(
     modifier: Modifier = Modifier,
     minimo: Int = 1
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+    Surface(
+        modifier = modifier, // Recibe las dimensiones desde la pantalla donde se use
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.5.dp, Color(0xFFE0E0E0))
     ) {
-        BotonCirculo(
-            icono = Icons.Default.Remove,
-            habilitado = cantidad > minimo,
-            relleno = false,
-            onClick = onDecrementar
-        )
-
-        Box(
-            modifier = Modifier.size(width = 36.dp, height = 32.dp),
-            contentAlignment = Alignment.Center
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "$cantidad",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+            BotonCirculo(
+                icono = Icons.Default.Remove,
+                habilitado = cantidad > minimo,
+                relleno = false,
+                onClick = onDecrementar
+            )
+
+            Box(
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "$cantidad",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            BotonCirculo(
+                icono = Icons.Default.Add,
+                habilitado = true,
+                relleno = true,
+                onClick = onIncrementar
             )
         }
-
-        BotonCirculo(
-            icono = Icons.Default.Add,
-            habilitado = true,
-            relleno = true,
-            onClick = onIncrementar
-        )
     }
 }
 
@@ -83,21 +93,20 @@ private fun BotonCirculo(
         modifier = Modifier
             .size(32.dp)
             .background(
-                color = if (relleno) VerdeBodega else MaterialTheme.colorScheme.surface,
+                color = if (relleno) VerdeBodega else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                 shape = CircleShape
             )
     ) {
         val colorIcono = when {
-            relleno -> MaterialTheme.colorScheme.onPrimary
-            habilitado -> VerdeBodega
+            relleno -> Color.White
+            habilitado -> MaterialTheme.colorScheme.onSurface
             else -> GrisBorde
         }
         Icon(
             imageVector = icono,
             contentDescription = null,
             tint = colorIcono,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(16.dp)
         )
     }
 }
-
